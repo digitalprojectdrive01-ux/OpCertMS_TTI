@@ -237,6 +237,11 @@ body.role-trainer .ab.dx{display:none!important}
 body.role-trainer #page-employees .ab{display:none!important}
 body.role-trainer #page-processes .ab{display:none!important}
 body.role-trainer #page-employees #mab-emp{display:none!important}
+/* Settings only for admin */
+body.role-viewer .nav-lnk[data-p="settings"]{display:none!important}
+body.role-trainer .nav-lnk[data-p="settings"]{display:none!important}
+body.role-viewer #page-import{display:none!important}
+body.role-trainer #page-import{display:none!important}
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   #sidebar,#topbar,#page-dashboard,#page-employees,#page-processes,
@@ -282,8 +287,8 @@ body.role-trainer #page-employees #mab-emp{display:none!important}
     <div class="login-body">
       <!-- Login -->
       <div class="login-field">
-        <label>Username</label>
-        <input type="text" id="l-user" placeholder="admin / trainer / viewer"
+        <label>Email</label>
+        <input type="email" id="l-user" placeholder="your@email.com"
           autocomplete="username"
           onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()">
       </div>
@@ -321,6 +326,7 @@ body.role-trainer #page-employees #mab-emp{display:none!important}
     <a class="nav-lnk" data-p="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Print Cards</a>
     <div class="sb-sec">Data</div>
     <a class="nav-lnk" data-p="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</a>
+    <a class="nav-lnk" data-p="verify"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify Certificate</a>
     <a class="nav-lnk" data-p="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings & SharePoint</a>
   </div>
   <div class="sb-foot" id="sbf"><span class="dot warn"></span>Not connected</div>
@@ -552,6 +558,33 @@ body.role-trainer #page-employees #mab-emp{display:none!important}
   </div>
 </div>
 
+<!-- VERIFY -->
+<div id="page-verify" class="page">
+  <div style="max-width:600px;margin:0 auto">
+    <div class="box">
+      <div class="box-hdr">
+        <div style="width:30px;height:30px;border-radius:7px;background:#27AE60;display:flex;align-items:center;justify-content:center;font-size:16px">✓</div>
+        <div><h3 style="font-size:14px;font-weight:600">Verify Certificate</h3>
+        <p style="font-size:11.5px;color:#999;margin-top:1px">Check the authenticity of any OpCertMS certificate</p></div>
+      </div>
+      <div class="box-body">
+        <div style="display:flex;gap:10px;align-items:end">
+          <div class="fl" style="flex:1">
+            <label>Certificate ID</label>
+            <input type="text" id="verify-id-inp" placeholder="e.g. CERT-2024-0001"
+              onkeydown="if(event.key==='Enter')verifyCert()">
+          </div>
+          <button class="btn bp" onclick="verifyCert()" style="height:36px">🔍 Verify</button>
+        </div>
+        <div id="verify-result" style="margin-top:18px"></div>
+      </div>
+    </div>
+    <div class="ib" style="margin-top:0">
+      💡 Scan the QR code on any certificate card to verify instantly, or enter the Certificate ID manually above.
+    </div>
+  </div>
+</div>
+
 <!-- IMPORT -->
 <div id="page-import" class="page">
   <div style="max-width:720px">
@@ -639,45 +672,39 @@ body.role-trainer #page-employees #mab-emp{display:none!important}
     <div class="box" id="user-mgmt-box">
       <div class="box-hdr">
         <div style="width:30px;height:30px;border-radius:7px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:15px">👑</div>
-        <div><h3 style="font-size:14px;font-weight:600">Management account</h3><p style="font-size:11.5px;color:#999;margin-top:1px">Add / edit login accounts</p></div>
+        <div><h3 style="font-size:14px;font-weight:600">User Management (Supabase)</h3>
+        <p style="font-size:11.5px;color:#999;margin-top:1px">Manage login accounts via Supabase Authentication</p></div>
       </div>
       <div class="box-body">
-        <div style="margin-bottom:14px">
-          <table style="width:100%;font-size:13px;border-collapse:collapse">
-            <thead><tr style="background:#f8f8f8;border-bottom:2px solid #ebebeb">
-              <th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Username</th>
-              <th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Password</th>
-              <th style="padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Role</th>
-              <th style="padding:8px 12px"></th>
-            </tr></thead>
-            <tbody id="users-tbody"></tbody>
-          </table>
+        <div id="app-users-list" style="margin-bottom:14px">
+          <div style="text-align:center;color:#ccc;padding:12px;font-size:12px">Loading users...</div>
         </div>
         <div style="background:#f8f9fa;border-radius:7px;padding:14px;border:1px solid #e8e8e8">
-          <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:10px">+ Add / Update Account</div>
+          <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:10px">+ Invite New User</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
-            <div class="fl"><label>Username</label><input type="text" id="nu-user" placeholder="username"></div>
-            <div class="fl"><label>Password</label><input type="password" id="nu-pass" placeholder="password"></div>
+            <div class="fl"><label>Email</label><input type="email" id="nu-email" placeholder="user@company.com"></div>
+            <div class="fl"><label>Full Name</label><input type="text" id="nu-name" placeholder="Full name"></div>
             <div class="fl"><label>Role</label>
               <select id="nu-role" style="padding:7px 10px;border:1px solid #e0e0e0;border-radius:5px;font-size:13px;outline:none">
                 <option value="admin">👑 Admin</option>
                 <option value="trainer">✏ Trainer</option>
-                <option value="viewer">👁 Viewer</option>
+                <option value="viewer" selected>👁 Viewer</option>
               </select>
             </div>
-            <button class="btn bp" onclick="saveUser()" style="height:36px">Save</button>
+            <button class="btn bp" onclick="inviteUser()" style="height:36px">Invite</button>
           </div>
+          <div style="font-size:11px;color:#aaa;margin-top:8px">An invitation email will be sent via Supabase Auth.</div>
         </div>
         <div class="ib w" style="margin-top:12px">
-          <strong>Permissions:</strong><br>
-          👑 <strong>Admin</strong> — Full access: view, add, edit, delete all<br>
-          ✏ <strong>Trainer</strong> — View + cấp chứng chỉ + gia hạn (không sửa employees/quy trình)<br>
-          👁 <strong>Viewer</strong> — View only, cannot modify data
+          <strong>Roles:</strong><br>
+          👑 <strong>Admin</strong> — Full access: view, add, edit, delete, settings<br>
+          ✏ <strong>Trainer</strong> — Issue &amp; renew certificates only<br>
+          👁 <strong>Viewer</strong> — Read-only access
         </div>
       </div>
     </div>
 
-        <!-- DEPARTMENT MANAGEMENT -->
+    <!-- DEPARTMENT MANAGEMENT -->
     <div class="box" id="dept-mgmt-box">
       <div class="box-hdr">
         <div style="width:30px;height:30px;border-radius:7px;background:#2980B9;display:flex;align-items:center;justify-content:center;font-size:16px">🏭</div>
@@ -846,7 +873,7 @@ function autoId(pfx,arr){
 }
 
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
-const ptitles={dashboard:'Dashboard',employees:'Management employees',depts:'Management bộ phận',processes:'Management quy trình',certs:'Certificates',renewal:'Renewal Tracking',matrix:'Skill Matrix',card:'Print Cards',import:'Import Excel',settings:'Settings & SharePoint'};
+const ptitles={dashboard:'Dashboard',verify:'Verify Certificate',employees:'Management employees',depts:'Management bộ phận',processes:'Management quy trình',certs:'Certificates',renewal:'Renewal Tracking',matrix:'Skill Matrix',card:'Print Cards',import:'Import Excel',settings:'Settings & SharePoint'};
 const addPages={employees:true,depts:true,processes:true,certs:true};
 let curPage='dashboard';
 document.querySelectorAll('.nav-lnk').forEach(a=>a.addEventListener('click',()=>nav(a.dataset.p)));
@@ -867,7 +894,9 @@ function mAct(){
 function rPage(p){
   if(p==='dashboard')rDash();else if(p==='employees')rEmp();else if(p==='depts')rDeptsPage();
   else if(p==='processes')rProc();else if(p==='certs')rCert();else if(p==='renewal')rRen();
-  else if(p==='matrix')rMatrix();else if(p==='card')rCardList();else if(p==='settings')rSet();
+  else if(p==='matrix')rMatrix();else if(p==='card')rCardList();
+  else if(p==='verify')checkVerifyFromURL();
+  else if(p==='settings')rSet();
 }
 
 // ─── SHAREPOINT ─────────────────────────────────────────────────────────────
@@ -1577,6 +1606,11 @@ function buildEmpCard(emp){
     +row(68.71, 5.34, pRow, 'overflow:visible')
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
+    // QR code — top right corner, z-index:3
+    +(sc.length>0 ? '<div style="'+Z+'top:69%;right:1%;width:14%;height:16%;z-index:3;display:flex;align-items:center;justify-content:center">'
+      +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&color=000000&bgcolor=ffffff&data='+
+      encodeURIComponent(window.location.origin+'/verify?id='+sc[0].id)+
+      '" style="width:100%;height:100%;object-fit:contain" title="Scan to verify certificate"></div>' : '')
     +'</div>'
   );
 }
@@ -1781,37 +1815,47 @@ function showToast(msg, color='#27AE60', dur=2200){
   setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},dur);
 }
 
-// ═══ AUTH ═════════════════════════════════════════════════════════════════════
-const USERS = {
-  admin:   {pass:'admin123',  role:'admin',   label:'Administrator'},
-  trainer: {pass:'trainer123',role:'trainer', label:'Trainer'},
-  viewer:  {pass:'viewer123', role:'viewer',  label:'Viewer'},
-};
+// ═══ AUTH (Supabase) ══════════════════════════════════════════════════════════
 let currentUser = null;
+let _authToken  = null;
 
-function doLogin(){
-  const u=document.getElementById('l-user').value.trim().toLowerCase();
-  const p=document.getElementById('l-pass').value;
-  const err=document.getElementById('l-err');
-  const user=USERS[u];
-  if(!user||user.pass!==p){
+async function doLogin(){
+  const emailOrUser = document.getElementById('l-user').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  const err  = document.getElementById('l-err');
+  const btn  = document.querySelector('.login-btn');
+  if(!emailOrUser||!pass){err.textContent='Please enter email and password.';err.classList.add('show');return;}
+  btn.disabled=true; btn.textContent='Logging in...';
+  try{
+    const r = await fetch('/api/auth',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'login',email:emailOrUser,password:pass})
+    });
+    const data = await r.json();
+    if(!r.ok){ throw new Error(data.error||'Login failed'); }
+    _authToken  = data.access_token;
+    currentUser = { username:data.user.email, role:data.user.role, label:data.user.full_name };
+    try{sessionStorage.setItem('opcertms_sess', JSON.stringify({token:_authToken,user:currentUser}));}catch(e){}
+    err.classList.remove('show');
+    applyRole();
+    document.getElementById('login-screen').classList.add('hidden');
+    showToast('Welcome, '+currentUser.label+'!','#27AE60',3000);
+    initSync();
+  }catch(e){
+    err.textContent = e.message||'Incorrect email or password!';
     err.classList.add('show');
     document.getElementById('l-pass').value='';
     document.getElementById('l-pass').focus();
-    return;
+  }finally{
+    btn.disabled=false; btn.textContent='LOGIN';
   }
-  err.classList.remove('show');
-  currentUser={username:u,role:user.role,label:user.label};
-  try{sessionStorage.setItem('opcertms_sess',JSON.stringify(currentUser));}catch(e){}
-  applyRole();
-  document.getElementById('login-screen').classList.add('hidden');
-  showToast(`Welcome, ${user.label}!`,'#27AE60',3000);
-  initSync();
 }
 
-function doLogout(){
+async function doLogout(){
   if(!confirm('Logout?'))return;
-  currentUser=null;
+  if(_authToken) await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',token:_authToken})}).catch(()=>{});
+  currentUser=null; _authToken=null;
   try{sessionStorage.removeItem('opcertms_sess');}catch(e){}
   document.getElementById('l-user').value='';
   document.getElementById('l-pass').value='';
@@ -1825,21 +1869,21 @@ function applyRole(){
   const r=currentUser.role;
   document.body.className=document.body.className.replace(/role-\S+/g,'').trim();
   document.body.classList.add('role-'+r);
-  document.getElementById('ub-name').textContent=currentUser.label;
+  document.getElementById('ub-name').textContent=currentUser.label||currentUser.username;
   const re=document.getElementById('ub-role');
   re.textContent=r==='admin'?'👑 Admin':r==='trainer'?'✏ Trainer':'👁 Viewer';
   re.className='urole '+r;
   const importLink=document.querySelector('.nav-lnk[data-p="import"]');
   const settingsLink=document.querySelector('.nav-lnk[data-p="settings"]');
   if(importLink) importLink.style.display=r==='admin'?'':'none';
-  if(settingsLink) settingsLink.style.display=r!=='viewer'?'':'none';
+  if(settingsLink) settingsLink.style.display=r==='admin'?'':'none';
   document.querySelectorAll('.tbtn.green').forEach(b=>b.style.display=r==='admin'?'':'none');
 }
 
 function requireRole(...roles){
   if(!currentUser){alert('Please log in!');return false;}
   if(!roles.includes(currentUser.role)){
-    alert(`You do not have permission to perform this action.\nRequired: ${roles.join(' or ')}`);
+    alert('You do not have permission.\nRequired: '+roles.join(' or '));
     return false;
   }
   return true;
@@ -2384,13 +2428,25 @@ async function initSync(){
 openIDB().then(async()=>{
   loadUsers();
   loadSyncCfg();
-  // Restore session
+  // Restore session via token verify
   try{
-    const sess=sessionStorage.getItem('opcertms_sess');
-    if(sess){
-      currentUser=JSON.parse(sess);
-      applyRole();
-      document.getElementById('login-screen').classList.add('hidden');
+    const raw=sessionStorage.getItem('opcertms_sess');
+    if(raw){
+      const saved=JSON.parse(raw);
+      if(saved.token){
+        const r=await fetch('/api/auth',{method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'verify',token:saved.token})});
+        if(r.ok){
+          const u=await r.json();
+          _authToken=saved.token;
+          currentUser={username:u.email,role:u.role,label:u.full_name||u.email};
+          applyRole();
+          document.getElementById('login-screen').classList.add('hidden');
+        }else{
+          sessionStorage.removeItem('opcertms_sess');
+        }
+      }
     }
   }catch(e){}
   // Load local data first (fast)
@@ -2415,6 +2471,12 @@ openIDB().then(async()=>{
 // Safety net
 setTimeout(()=>{
   if(!currentUser){
+    // Allow public verify page without login
+    if(window.location.pathname==='/verify'||window.location.search.includes('id=')){
+      document.getElementById('login-screen').classList.add('hidden');
+      nav('verify');
+      return;
+    }
     const ls=document.getElementById('login-screen');
     if(ls)ls.classList.remove('hidden');
     const f=document.getElementById('l-user');if(f)f.focus();
