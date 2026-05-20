@@ -1693,7 +1693,10 @@ function buildEmpCard(emp){
   const sc  = certs.slice(0,4);
   const n   = sc.length;  // 0,1,2,3,4 — không dùng ||1 để tránh lỗi sc[0] undefined
   const lvN = lv => { const m=lv.match(/Level\s*(\d)/i); return m?'Lv'+m[1]:''; };
-  const cW  = '25%';  // mỗi cột data = 25% card width (đo pixel từ template)
+  // Template has 3 equal data columns (25% each = 75% total)
+  // For n certs: each cert gets one column, max 3 columns visible
+  const nCols = Math.min(n, 3);           // max 3 cols
+  const cW    = nCols > 0 ? (100/nCols).toFixed(2)+'%' : '100%'; // width inside container
   const Z   = 'position:absolute;z-index:2;';
 
   // ── Process row ──────────────────────────────────────────────
@@ -1758,8 +1761,8 @@ function buildEmpCard(emp){
 
   // ── Row container ────────────────────────────────────────────
   // Template: 3 cột data, mỗi cột 25% (đo pixel: 24.7%→49.7%→74.8%→99.8%)
-  const colW = 25; // % mỗi cột
-  const rowW = n===0 ? 75 : Math.min(n, 3) * colW;
+  const colW = 25; // % per column (template measured: 3 cols × 25% = 75%)
+  const rowW = n===0 ? 75 : nCols * colW;
   const row = (top, h, cells, ovf) =>
     '<div style="'+Z+'top:'+top+'%;left:24.7%;width:'+rowW+'%;height:'+h+'%;'+(ovf||'overflow:hidden')+';box-sizing:border-box">'
     +'<table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed"><tr>'+cells+'</tr></table></div>';
@@ -1777,8 +1780,8 @@ function buildEmpCard(emp){
     +row(68.71, 5.34, pRow, 'overflow:visible')
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
-    // QR code — bottom-left corner of photo zone
-    +'<div style="'+Z+'top:46%;left:12.5%;width:11%;height:9%;z-index:3;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.92);border-radius:2px;padding:1px">'
+    // QR — bottom-left inside photo zone (photo: top:21% height:34% → bottom:55%)
+    +'<div style="'+Z+'top:47%;left:12.5%;width:10%;height:8%;z-index:3;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.95);border-radius:2px;padding:1px">'
     +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&qzone=1&data='
     +encodeURIComponent(window.location.origin+'/verify?emp='+emp.id)
     +'" style="width:100%;height:100%;object-fit:contain" title="Scan to verify"></div>'
