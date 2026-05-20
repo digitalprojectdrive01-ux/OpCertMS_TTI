@@ -225,6 +225,11 @@ input:focus,select:focus{border-color:var(--red)}
   font-family:inherit;transition:.15s;
 }
 #user-bar .logout-btn:hover{border-color:var(--red);color:var(--red)}
+@media(max-width:768px){
+  .hide-mobile{display:none!important}
+  #user-bar .uname{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #user-bar .urole{display:none}
+}
 /* ── Role-based visibility ── */
 /* VIEWER: read-only */
 body.role-viewer .edit-only{display:none!important}
@@ -240,8 +245,103 @@ body.role-trainer #page-employees #mab-emp{display:none!important}
 /* Settings only for admin */
 body.role-viewer .nav-lnk[data-p="settings"]{display:none!important}
 body.role-trainer .nav-lnk[data-p="settings"]{display:none!important}
+body.role-viewer .nav-lnk[data-p="users"]{display:none!important}
+body.role-trainer .nav-lnk[data-p="users"]{display:none!important}
+body.role-trainer .nav-lnk[data-p="settings"]{display:none!important}
 body.role-viewer #page-import{display:none!important}
 body.role-trainer #page-import{display:none!important}
+/* ═══ RESPONSIVE / MOBILE ══════════════════════════════════════════════════ */
+/* Mobile hamburger button */
+#menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:#444;font-size:20px;flex-shrink:0}
+
+@media (max-width:768px){
+  :root{--sidebar:240px}
+  body{overflow:hidden}
+
+  /* Sidebar slides in/out */
+  #sidebar{
+    position:fixed;top:0;left:0;height:100%;z-index:500;
+    transform:translateX(-100%);transition:transform .25s ease;
+    box-shadow:4px 0 24px rgba(0,0,0,.35);
+  }
+  #sidebar.open{transform:translateX(0)}
+
+  /* Overlay when sidebar open */
+  #sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:499;
+  }
+  #sidebar.open ~ #sidebar-overlay{display:block}
+
+  /* Main takes full width */
+  #main{width:100%;overflow:hidden}
+  #topbar{padding:0 12px;gap:6px;height:52px}
+  #topbar h2{font-size:17px}
+  #menu-toggle{display:flex;align-items:center}
+
+  /* Topbar buttons — hide labels on small screens */
+  .tbtn{padding:6px 10px;font-size:11px}
+  #content{padding:12px}
+
+  /* KPI grid: 2 cols on mobile */
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Dashboard 2-panel → stack */
+  #page-dashboard > div:last-child{grid-template-columns:1fr!important}
+
+  /* Tables: horizontal scroll */
+  .tw{overflow-x:auto}
+  table{min-width:500px}
+  #page-employees table,#page-certs table,#page-renewal table{min-width:640px}
+
+  /* Modals: full-width on mobile */
+  .md{width:96vw!important;max-width:96vw!important;margin:8px}
+  .fg{grid-template-columns:1fr!important}
+  .fg .s2{grid-column:span 1}
+
+  /* Card page: stack */
+  #card-tab-single > div,#card-tab-bulk > div{
+    grid-template-columns:1fr!important;
+  }
+  #card-tab-bulk > div > div:first-child{order:2}
+  #card-tab-bulk > div > div:last-child{order:1}
+
+  /* Settings max-width */
+  #page-settings > div,#page-import > div,#page-verify > div{
+    max-width:100%!important;
+  }
+  /* Topbar: hide some buttons */
+  #topbar .tbtn.green{display:none!important}
+}
+
+@media (max-width:480px){
+  .kpi-val{font-size:28px!important}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  #topbar h2{font-size:15px}
+}
+
+/* ═══ PUBLIC VERIFY MODE (QR scan — no auth UI) ═════════════════════════════ */
+body.verify-mode #sidebar,
+body.verify-mode #topbar,
+body.verify-mode #login-screen,
+body.verify-mode #menu-toggle,
+body.verify-mode #sidebar-overlay{display:none!important}
+
+body.verify-mode #main{display:block;height:auto;overflow:auto}
+body.verify-mode #content{
+  padding:0;height:auto;overflow:visible;
+  display:flex;align-items:flex-start;justify-content:center;
+  background:#f2f2f2;min-height:100vh;
+}
+body.verify-mode #page-verify{
+  display:block!important;
+  width:100%;max-width:540px;
+  padding:16px;
+  margin:0 auto;
+}
+body.verify-mode #page-verify .box{
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   #sidebar,#topbar,#page-dashboard,#page-employees,#page-processes,
@@ -326,14 +426,17 @@ body.role-trainer #page-import{display:none!important}
     <a class="nav-lnk" data-p="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Print Cards</a>
     <div class="sb-sec">Data</div>
     <a class="nav-lnk" data-p="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</a>
+    <a class="nav-lnk admin-only" data-p="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>User Accounts</a>
     <a class="nav-lnk" data-p="verify"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verify Certificate</a>
     <a class="nav-lnk" data-p="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings & SharePoint</a>
   </div>
   <div class="sb-foot" id="sbf"><span class="dot warn"></span>Not connected</div>
 </nav>
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div id="main">
   <div id="topbar">
+    <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">☰</button>
     <h2 id="ptitle">DASHBOARD</h2>
     <div id="user-bar">
     <span class="uname" id="ub-name">—</span>
@@ -344,7 +447,7 @@ body.role-trainer #page-import{display:none!important}
   <button class="tbtn green" onclick="nav('import')">📊 Import Excel</button>
     
     <div id="sync-status-dot" style="width:9px;height:9px;border-radius:50%;background:#aaa;flex-shrink:0"></div>
-    <span id="sync-status-label" style="font-size:11.5px;color:#888;white-space:nowrap">○ Offline</span>
+    <span id="sync-status-label" style="font-size:11.5px;color:#888;white-space:nowrap" class="hide-mobile">○ Offline</span>
     <button class="tbtn red" id="mab" onclick="mAct()">+ Add New</button>
   </div>
   <div id="content">
@@ -557,29 +660,118 @@ body.role-trainer #page-import{display:none!important}
   </div>
 </div>
 
+<!-- USERS -->
+<div id="page-users" class="page">
+  <div style="max-width:860px">
+    <div class="tw" style="margin-bottom:18px">
+      <div class="tb" style="justify-content:space-between">
+        <span style="font-size:13px;font-weight:600;color:#444">Login Accounts <span style="font-size:11px;color:#aaa;font-weight:400">(separate from employees)</span></span>
+        <button class="btn bp" onclick="openAddUser()">+ Add User</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Full Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last Login</th><th></th>
+        </tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+    <div class="ib" style="font-size:12px">
+      💡 <strong>User Accounts</strong> are for staff who need to log in and manage the system.<br>
+      <strong>Employees</strong> (in the Employees page) are people who hold certificates — they do <em>not</em> need a login account.
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD/EDIT USER -->
+<div class="mo" id="m-user">
+  <div class="md" style="width:480px">
+    <div class="mh"><h3 id="m-user-title">ADD USER</h3><button onclick="cM('m-user')">✕</button></div>
+    <div class="mb">
+      <div class="fg">
+        <div class="fl s2"><label>Full Name *</label><input type="text" id="mu-name" placeholder="Full name"></div>
+        <div class="fl s2"><label>Email *</label><input type="email" id="mu-email" placeholder="user@company.com"></div>
+        <div class="fl"><label>Role *</label>
+          <select id="mu-role">
+            <option value="admin">👑 Admin — Full access</option>
+            <option value="trainer">✏ Trainer — Certs & renewal</option>
+            <option value="viewer" selected>👁 Viewer — Read only</option>
+          </select>
+        </div>
+        <div class="fl"><label>Status</label>
+          <select id="mu-active">
+            <option value="true">✅ Active</option>
+            <option value="false">🔴 Disabled</option>
+          </select>
+        </div>
+        <div class="fl s2" id="mu-pass-row">
+          <label id="mu-pass-label">Password *</label>
+          <input type="password" id="mu-pass" placeholder="Set password">
+        </div>
+        <div class="fl s2" id="mu-pass2-row">
+          <label>Confirm Password *</label>
+          <input type="password" id="mu-pass2" placeholder="Confirm password">
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="cM('m-user')">Cancel</button>
+      <button class="btn bp" onclick="saveUser()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CHANGE PASSWORD -->
+<div class="mo" id="m-chpwd">
+  <div class="md" style="width:400px">
+    <div class="mh"><h3>CHANGE PASSWORD</h3><button onclick="cM('m-chpwd')">✕</button></div>
+    <div class="mb">
+      <div id="chpwd-name" style="font-size:14px;font-weight:600;margin-bottom:14px;color:#555"></div>
+      <div class="fl" style="margin-bottom:12px"><label>New Password *</label><input type="password" id="chpwd-new" placeholder="New password"></div>
+      <div class="fl"><label>Confirm *</label><input type="password" id="chpwd-confirm" placeholder="Confirm password"></div>
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="cM('m-chpwd')">Cancel</button>
+      <button class="btn bw" onclick="doAdminChangePassword()">Change Password</button>
+    </div>
+  </div>
+</div>
+
 <!-- VERIFY -->
 <div id="page-verify" class="page">
-  <div style="max-width:600px;margin:0 auto">
+  <div style="max-width:560px;margin:0 auto">
+
+    <!-- Public mode header (shown when accessed via QR/direct link) -->
+    <div id="verify-public-header" style="display:none;text-align:center;padding:20px 0 16px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--dark)">OPCERTMS</div>
+      <div style="font-size:11px;color:#999;letter-spacing:1.5px;text-transform:uppercase">Certificate Verification</div>
+    </div>
+
     <div class="box">
       <div class="box-hdr">
         <div style="width:30px;height:30px;border-radius:7px;background:#27AE60;display:flex;align-items:center;justify-content:center;font-size:16px">✓</div>
         <div><h3 style="font-size:14px;font-weight:600">Verify Certificate</h3>
-        <p style="font-size:11.5px;color:#999;margin-top:1px">Check the authenticity of any OpCertMS certificate</p></div>
+        <p style="font-size:11.5px;color:#999;margin-top:1px">Check authenticity of any certificate</p></div>
       </div>
       <div class="box-body">
-        <div style="display:flex;gap:10px;align-items:end">
-          <div class="fl" style="flex:1">
-            <label>Certificate ID</label>
-            <input type="text" id="verify-id-inp" placeholder="CERT-2024-0001 or EMP-001"
-              onkeydown="if(event.key==='Enter')verifyCert()">
-          </div>
-          <button class="btn bp" onclick="verifyCert()" style="height:36px">🔍 Verify</button>
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <input type="text" id="verify-id-inp" placeholder="CERT-2024-0001 or EMP-001"
+            style="flex:1;font-size:14px;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:7px;outline:none"
+            onkeydown="if(event.key==='Enter')verifyCert()"
+            oninput="this.style.borderColor='#e0e0e0'">
+          <button onclick="verifyCert()" style="background:var(--red);color:#fff;border:none;padding:10px 18px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;min-width:80px">
+            🔍 Verify
+          </button>
         </div>
-        <div id="verify-result" style="margin-top:18px"></div>
+        <div style="font-size:11.5px;color:#aaa;margin-top:8px">
+          Enter a <strong>Certificate ID</strong> (CERT-...) or <strong>Employee ID</strong> (EMP-...) to view all their certificates.
+        </div>
+        <div id="verify-result" style="margin-top:16px"></div>
       </div>
     </div>
-    <div class="ib" style="margin-top:0">
-      💡 Scan the QR code on any certificate card to verify instantly, or enter a <strong>Certificate ID</strong> (CERT-...) or <strong>Employee ID</strong> (EMP-...) to see all certificates for that employee.
+
+    <!-- Back link in verify-mode -->
+    <div id="verify-back-link" style="display:none;text-align:center;padding:14px 0;font-size:12px;color:#aaa">
+      Powered by <strong style="color:var(--dark)">OpCertMS</strong> · TTI Group AES
     </div>
   </div>
 </div>
@@ -663,36 +855,19 @@ body.role-trainer #page-import{display:none!important}
     <div class="box" id="user-mgmt-box">
       <div class="box-hdr">
         <div style="width:30px;height:30px;border-radius:7px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:15px">👑</div>
-        <div><h3 style="font-size:14px;font-weight:600">User Management (Supabase)</h3>
-        <p style="font-size:11.5px;color:#999;margin-top:1px">Manage login accounts via Supabase Authentication</p></div>
+        <div><h3 style="font-size:14px;font-weight:600">User Accounts</h3>
+        <p style="font-size:11.5px;color:#999;margin-top:1px">Manage staff login accounts</p></div>
       </div>
       <div class="box-body">
-        <div id="app-users-list" style="margin-bottom:14px">
-          <div style="text-align:center;color:#ccc;padding:12px;font-size:12px">Loading users...</div>
+        <div id="app-users-list" style="margin-bottom:12px">
+          <div style="text-align:center;color:#ccc;padding:10px;font-size:12px">Loading...</div>
         </div>
-        <div style="background:#f8f9fa;border-radius:7px;padding:14px;border:1px solid #e8e8e8">
-          <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:10px">+ Invite New User</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
-            <div class="fl"><label>Email</label><input type="email" id="nu-email" placeholder="user@company.com"></div>
-            <div class="fl"><label>Full Name</label><input type="text" id="nu-name" placeholder="Full name"></div>
-            <div class="fl"><label>Role</label>
-              <select id="nu-role" style="padding:7px 10px;border:1px solid #e0e0e0;border-radius:5px;font-size:13px;outline:none">
-                <option value="admin">👑 Admin</option>
-                <option value="trainer">✏ Trainer</option>
-                <option value="viewer" selected>👁 Viewer</option>
-              </select>
-            </div>
-            <button class="btn bp" onclick="inviteUser()" style="height:36px">Invite</button>
-          </div>
-          <div style="font-size:11px;color:#aaa;margin-top:8px">An invitation email will be sent via Supabase Auth.</div>
-        </div>
-        <div class="ib w" style="margin-top:12px">
-          <strong>Roles:</strong><br>
-          👑 <strong>Admin</strong> — Full access: view, add, edit, delete, settings<br>
-          ✏ <strong>Trainer</strong> — Issue &amp; renew certificates only<br>
-          👁 <strong>Viewer</strong> — Read-only access<br><br>
-          ⚠ <strong>Note:</strong> App users (login accounts) are <em>separate</em> from employees.
-          An employee does not need an account to have certificates. Only staff who need to <em>manage</em> the system require an account.
+        <button class="btn bp" onclick="nav('users')" style="width:100%;justify-content:center">
+          👥 Manage User Accounts →
+        </button>
+        <div class="ib" style="margin-top:12px;font-size:12px">
+          💡 User accounts (login) are <strong>separate</strong> from employees.<br>
+          Employees hold certificates. Users log in to manage the system.
         </div>
       </div>
     </div>
@@ -866,7 +1041,7 @@ function autoId(pfx,arr){
 }
 
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
-const ptitles={dashboard:'Dashboard',verify:'Verify Certificate',employees:'Management employees',depts:'Management bộ phận',processes:'Management quy trình',certs:'Certificates',renewal:'Renewal Tracking',matrix:'Skill Matrix',card:'Print Cards',import:'Import Excel',settings:'Settings & SharePoint'};
+const ptitles={dashboard:'Dashboard',verify:'Verify Certificate',users:'User Accounts',employees:'Management employees',depts:'Management bộ phận',processes:'Management quy trình',certs:'Certificates',renewal:'Renewal Tracking',matrix:'Skill Matrix',card:'Print Cards',import:'Import Excel',settings:'Settings & SharePoint'};
 const addPages={employees:true,depts:true,processes:true,certs:true};
 let curPage='dashboard';
 document.querySelectorAll('.nav-lnk').forEach(a=>a.addEventListener('click',()=>nav(a.dataset.p)));
@@ -875,7 +1050,9 @@ function nav(p){
   document.querySelectorAll('.nav-lnk').forEach(a=>a.classList.toggle('active',a.dataset.p===p));
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+p));
   document.getElementById('ptitle').textContent=(ptitles[p]||p).toUpperCase();
-  document.getElementById('mab').style.display=addPages[p]?'':'none';
+  const mab=document.getElementById('mab');
+  if(mab) mab.style.display=addPages[p]?'':'none';
+  if(window.innerWidth<=768) closeSidebar();
   rPage(p);
 }
 function mAct(){
@@ -889,6 +1066,7 @@ function rPage(p){
   else if(p==='processes')rProc();else if(p==='certs')rCert();else if(p==='renewal')rRen();
   else if(p==='matrix')rMatrix();else if(p==='card')rCardList();
   else if(p==='verify')checkVerifyFromURL();
+  else if(p==='users')rUsers();
   else if(p==='settings')rSet();
 }
 
@@ -1599,9 +1777,9 @@ function buildEmpCard(emp){
     +row(68.71, 5.34, pRow, 'overflow:visible')
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
-    // QR code — links to employee verify page (shows all certs)
-    +'<div style="'+Z+'top:70%;right:0;width:13%;height:13%;z-index:3;padding:1px;display:flex;align-items:center;justify-content:center">'
-    +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&qzone=1&data='
+    // QR code — bottom-left corner of photo zone
+    +'<div style="'+Z+'top:46%;left:12.5%;width:11%;height:9%;z-index:3;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.92);border-radius:2px;padding:1px">'
+    +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&qzone=1&data='
     +encodeURIComponent(window.location.origin+'/verify?emp='+emp.id)
     +'" style="width:100%;height:100%;object-fit:contain" title="Scan to verify"></div>'
     +'</div>'
@@ -1704,7 +1882,99 @@ function bulkPrint(){
         align-items:start;
       }
       @page{size:A4 portrait;margin:0}
-      @media print{
+      /* ═══ RESPONSIVE / MOBILE ══════════════════════════════════════════════════ */
+/* Mobile hamburger button */
+#menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:#444;font-size:20px;flex-shrink:0}
+
+@media (max-width:768px){
+  :root{--sidebar:240px}
+  body{overflow:hidden}
+
+  /* Sidebar slides in/out */
+  #sidebar{
+    position:fixed;top:0;left:0;height:100%;z-index:500;
+    transform:translateX(-100%);transition:transform .25s ease;
+    box-shadow:4px 0 24px rgba(0,0,0,.35);
+  }
+  #sidebar.open{transform:translateX(0)}
+
+  /* Overlay when sidebar open */
+  #sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:499;
+  }
+  #sidebar.open ~ #sidebar-overlay{display:block}
+
+  /* Main takes full width */
+  #main{width:100%;overflow:hidden}
+  #topbar{padding:0 12px;gap:6px;height:52px}
+  #topbar h2{font-size:17px}
+  #menu-toggle{display:flex;align-items:center}
+
+  /* Topbar buttons — hide labels on small screens */
+  .tbtn{padding:6px 10px;font-size:11px}
+  #content{padding:12px}
+
+  /* KPI grid: 2 cols on mobile */
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Dashboard 2-panel → stack */
+  #page-dashboard > div:last-child{grid-template-columns:1fr!important}
+
+  /* Tables: horizontal scroll */
+  .tw{overflow-x:auto}
+  table{min-width:500px}
+  #page-employees table,#page-certs table,#page-renewal table{min-width:640px}
+
+  /* Modals: full-width on mobile */
+  .md{width:96vw!important;max-width:96vw!important;margin:8px}
+  .fg{grid-template-columns:1fr!important}
+  .fg .s2{grid-column:span 1}
+
+  /* Card page: stack */
+  #card-tab-single > div,#card-tab-bulk > div{
+    grid-template-columns:1fr!important;
+  }
+  #card-tab-bulk > div > div:first-child{order:2}
+  #card-tab-bulk > div > div:last-child{order:1}
+
+  /* Settings max-width */
+  #page-settings > div,#page-import > div,#page-verify > div{
+    max-width:100%!important;
+  }
+  /* Topbar: hide some buttons */
+  #topbar .tbtn.green{display:none!important}
+}
+
+@media (max-width:480px){
+  .kpi-val{font-size:28px!important}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  #topbar h2{font-size:15px}
+}
+
+/* ═══ PUBLIC VERIFY MODE (QR scan — no auth UI) ═════════════════════════════ */
+body.verify-mode #sidebar,
+body.verify-mode #topbar,
+body.verify-mode #login-screen,
+body.verify-mode #menu-toggle,
+body.verify-mode #sidebar-overlay{display:none!important}
+
+body.verify-mode #main{display:block;height:auto;overflow:auto}
+body.verify-mode #content{
+  padding:0;height:auto;overflow:visible;
+  display:flex;align-items:flex-start;justify-content:center;
+  background:#f2f2f2;min-height:100vh;
+}
+body.verify-mode #page-verify{
+  display:block!important;
+  width:100%;max-width:540px;
+  padding:16px;
+  margin:0 auto;
+}
+body.verify-mode #page-verify .box{
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+
+@media print{
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
         body{background:white}
         .info-bar{display:none!important}
@@ -1772,7 +2042,99 @@ function printCard(){
     <style>
       *{margin:0;padding:0;box-sizing:border-box}
       body{background:#f2f2f2;display:flex;align-items:center;justify-content:center;min-height:100vh}
-      @media print{
+      /* ═══ RESPONSIVE / MOBILE ══════════════════════════════════════════════════ */
+/* Mobile hamburger button */
+#menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:#444;font-size:20px;flex-shrink:0}
+
+@media (max-width:768px){
+  :root{--sidebar:240px}
+  body{overflow:hidden}
+
+  /* Sidebar slides in/out */
+  #sidebar{
+    position:fixed;top:0;left:0;height:100%;z-index:500;
+    transform:translateX(-100%);transition:transform .25s ease;
+    box-shadow:4px 0 24px rgba(0,0,0,.35);
+  }
+  #sidebar.open{transform:translateX(0)}
+
+  /* Overlay when sidebar open */
+  #sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:499;
+  }
+  #sidebar.open ~ #sidebar-overlay{display:block}
+
+  /* Main takes full width */
+  #main{width:100%;overflow:hidden}
+  #topbar{padding:0 12px;gap:6px;height:52px}
+  #topbar h2{font-size:17px}
+  #menu-toggle{display:flex;align-items:center}
+
+  /* Topbar buttons — hide labels on small screens */
+  .tbtn{padding:6px 10px;font-size:11px}
+  #content{padding:12px}
+
+  /* KPI grid: 2 cols on mobile */
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+
+  /* Dashboard 2-panel → stack */
+  #page-dashboard > div:last-child{grid-template-columns:1fr!important}
+
+  /* Tables: horizontal scroll */
+  .tw{overflow-x:auto}
+  table{min-width:500px}
+  #page-employees table,#page-certs table,#page-renewal table{min-width:640px}
+
+  /* Modals: full-width on mobile */
+  .md{width:96vw!important;max-width:96vw!important;margin:8px}
+  .fg{grid-template-columns:1fr!important}
+  .fg .s2{grid-column:span 1}
+
+  /* Card page: stack */
+  #card-tab-single > div,#card-tab-bulk > div{
+    grid-template-columns:1fr!important;
+  }
+  #card-tab-bulk > div > div:first-child{order:2}
+  #card-tab-bulk > div > div:last-child{order:1}
+
+  /* Settings max-width */
+  #page-settings > div,#page-import > div,#page-verify > div{
+    max-width:100%!important;
+  }
+  /* Topbar: hide some buttons */
+  #topbar .tbtn.green{display:none!important}
+}
+
+@media (max-width:480px){
+  .kpi-val{font-size:28px!important}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  #topbar h2{font-size:15px}
+}
+
+/* ═══ PUBLIC VERIFY MODE (QR scan — no auth UI) ═════════════════════════════ */
+body.verify-mode #sidebar,
+body.verify-mode #topbar,
+body.verify-mode #login-screen,
+body.verify-mode #menu-toggle,
+body.verify-mode #sidebar-overlay{display:none!important}
+
+body.verify-mode #main{display:block;height:auto;overflow:auto}
+body.verify-mode #content{
+  padding:0;height:auto;overflow:visible;
+  display:flex;align-items:flex-start;justify-content:center;
+  background:#f2f2f2;min-height:100vh;
+}
+body.verify-mode #page-verify{
+  display:block!important;
+  width:100%;max-width:540px;
+  padding:16px;
+  margin:0 auto;
+}
+body.verify-mode #page-verify .box{
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+
+@media print{
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
         body{background:white;margin:0;padding:0;display:block}
         @page{size:54mm 90mm;margin:0}
@@ -1813,36 +2175,33 @@ let currentUser = null;
 let _authToken  = null;
 
 async function doLogin(){
-  const emailOrUser = document.getElementById('l-user').value.trim();
-  const pass = document.getElementById('l-pass').value;
-  const err  = document.getElementById('l-err');
-  const btn  = document.querySelector('.login-btn');
-  if(!emailOrUser||!pass){err.textContent='Please enter email and password.';err.classList.add('show');return;}
+  const email = document.getElementById('l-user').value.trim().toLowerCase();
+  const pass  = document.getElementById('l-pass').value;
+  const err   = document.getElementById('l-err');
+  const btn   = document.querySelector('.login-btn');
+  if(!email||!pass){err.textContent='Please enter email and password.';err.classList.add('show');return;}
   btn.disabled=true; btn.textContent='Logging in...';
   try{
     const r = await fetch('/api/auth',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'login',email:emailOrUser,password:pass})
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'login',email,password:pass})
     });
     const data = await r.json();
-    if(!r.ok){ throw new Error(data.error||'Login failed'); }
-    _authToken  = data.access_token;
-    currentUser = { username:data.user.email, role:data.user.role, label:data.user.full_name };
+    if(!r.ok) throw new Error(data.error||'Login failed');
+    _authToken  = data.token;
+    currentUser = { id:data.user.id, username:data.user.email, role:data.user.role, label:data.user.full_name||data.user.email };
     try{sessionStorage.setItem('opcertms_sess', JSON.stringify({token:_authToken,user:currentUser}));}catch(e){}
     err.classList.remove('show');
     applyRole();
     document.getElementById('login-screen').classList.add('hidden');
-    showToast('Welcome, '+currentUser.label+'!','#27AE60',3000);
+    showToast('Welcome, '+(currentUser.label||currentUser.username)+'!','#27AE60',3000);
     initSync();
   }catch(e){
-    err.textContent = e.message||'Incorrect email or password!';
+    err.textContent=e.message||'Incorrect email or password!';
     err.classList.add('show');
     document.getElementById('l-pass').value='';
     document.getElementById('l-pass').focus();
-  }finally{
-    btn.disabled=false; btn.textContent='LOGIN';
-  }
+  }finally{ btn.disabled=false; btn.textContent='LOGIN'; }
 }
 
 async function doLogout(){
@@ -2394,24 +2753,26 @@ function _dLabel(d){  return d<0?'Expired '+Math.abs(d)+' days ago':d+' days rem
 
 function _certCard(c){
   const col=_stColor(c.status);
-  return `<div style="border:2px solid ${col};border-radius:10px;overflow:hidden;margin-bottom:10px">
-    <div style="background:${col};padding:9px 13px;display:flex;align-items:center;gap:9px">
-      <span style="font-size:18px">${_stIcon(c.status)}</span>
+  return `<div style="border:2px solid ${col};border-radius:12px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+    <div style="background:${col};padding:10px 14px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">${_stIcon(c.status)}</span>
       <div style="flex:1">
-        <div style="font-size:12.5px;font-weight:800;color:#fff">${_stLabel(c.status)}</div>
-        <div style="font-size:10.5px;color:rgba(255,255,255,.8)">${_dLabel(c.days_left)}</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:.3px">${_stLabel(c.status)}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.85)">${_dLabel(c.days_left)}</div>
       </div>
-      <div style="font-family:monospace;font-size:9.5px;color:rgba(255,255,255,.7)">${c.id}</div>
+      <div style="font-family:monospace;font-size:10px;color:rgba(255,255,255,.7);text-align:right;line-height:1.3">${c.id}</div>
     </div>
-    <div style="padding:11px 13px;background:#fff;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Process</div>
-        <div style="font-size:12.5px;font-weight:600">${c.process}</div></div>
-      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Level</div>
-        <div style="font-size:12.5px;font-weight:600">${c.level}</div></div>
-      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Issued</div>
-        <div style="font-size:12px">${fD(c.issued)}</div></div>
-      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Expires</div>
-        <div style="font-size:12px;font-weight:600;color:${col}">${fD(c.expires)}</div></div>
+    <div style="padding:13px 14px;background:#fff">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 14px">
+        <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Process</div>
+          <div style="font-size:13px;font-weight:700;line-height:1.3">${c.process}</div></div>
+        <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Level</div>
+          <div style="font-size:13px;font-weight:700">${c.level}</div></div>
+        <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Issued</div>
+          <div style="font-size:12.5px">${fD(c.issued)}</div></div>
+        <div><div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Expires</div>
+          <div style="font-size:12.5px;font-weight:700;color:${col}">${fD(c.expires)}</div></div>
+      </div>
     </div>
   </div>`;
 }
@@ -2464,66 +2825,133 @@ function checkVerifyFromURL(){
   }
 }
 
-// ─── App Users (Supabase) ─────────────────────────────────────────────────────
-async function loadAppUsers(){
-  const el=document.getElementById('app-users-list');if(!el)return;
+// ─── User Accounts Management ─────────────────────────────────────────────────
+let _editUserId = null;
+
+async function rUsers(){
+  const tbody=document.getElementById('users-tbody');
+  if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="6" class="es">Loading...</td></tr>';
   try{
-    const r=await fetch('/api/db?table=app_users&select=email,full_name,role,created_at&order=created_at');
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'list_users',token:_authToken})});
     const users=await r.json();
-    if(!Array.isArray(users)||!users.length){
-      el.innerHTML='<div style="text-align:center;color:#bbb;padding:12px;font-size:12.5px;font-style:italic">No users yet.</div>';return;
+    if(!r.ok||!Array.isArray(users)){tbody.innerHTML='<tr><td colspan="6" class="es">'+((users||{}).error||'Load failed')+'</td></tr>';return;}
+    if(!users.length){tbody.innerHTML='<tr><td colspan="6" class="es">No users yet. Click "+ Add User".</td></tr>';return;}
+    tbody.innerHTML=users.map(u=>`<tr>
+      <td><strong>${u.full_name||'—'}</strong></td>
+      <td style="font-size:12px;color:#666">${u.email}</td>
+      <td><span class="role-badge ${u.role}">${u.role==='admin'?'👑 Admin':u.role==='trainer'?'✏ Trainer':'👁 Viewer'}</span></td>
+      <td>${u.is_active?'<span class="badge bv">Active</span>':'<span class="badge bx">Disabled</span>'}</td>
+      <td style="font-size:11.5px;color:#aaa">${u.last_login?new Date(u.last_login).toLocaleDateString('en-GB'):'Never'}</td>
+      <td style="display:flex;gap:5px;white-space:nowrap">
+        <button class="ab" onclick="openEditUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">Edit</button>
+        <button class="ab" onclick="openChangePwd('${u.id}','${u.full_name||u.email}')">🔑</button>
+        ${u.id!==currentUser?.id?`<button class="ab dx" onclick="deleteUser('${u.id}','${u.full_name||u.email}')">Delete</button>`:'<span style="font-size:11px;color:#ccc;padding:3px 6px">(you)</span>'}
+      </td>
+    </tr>`).join('');
+  }catch(e){tbody.innerHTML=`<tr><td colspan="6" class="es">Error: ${e.message}</td></tr>`;}
+}
+
+function openAddUser(){
+  _editUserId=null;
+  document.getElementById('m-user-title').textContent='ADD USER';
+  document.getElementById('mu-name').value='';
+  document.getElementById('mu-email').value='';
+  document.getElementById('mu-email').readOnly=false;
+  document.getElementById('mu-role').value='viewer';
+  document.getElementById('mu-active').value='true';
+  document.getElementById('mu-pass').value='';
+  document.getElementById('mu-pass2').value='';
+  document.getElementById('mu-pass-row').style.display='';
+  document.getElementById('mu-pass2-row').style.display='';
+  document.getElementById('mu-pass-label').textContent='Password *';
+  document.getElementById('m-user').classList.add('open');
+}
+
+function openEditUser(u){
+  _editUserId=u.id;
+  document.getElementById('m-user-title').textContent='EDIT USER';
+  document.getElementById('mu-name').value=u.full_name||'';
+  document.getElementById('mu-email').value=u.email;
+  document.getElementById('mu-email').readOnly=true;
+  document.getElementById('mu-role').value=u.role;
+  document.getElementById('mu-active').value=String(u.is_active!==false);
+  document.getElementById('mu-pass').value='';
+  document.getElementById('mu-pass2').value='';
+  document.getElementById('mu-pass-row').style.display='none';
+  document.getElementById('mu-pass2-row').style.display='none';
+  document.getElementById('m-user').classList.add('open');
+}
+
+async function saveUser(){
+  const name=(document.getElementById('mu-name').value||'').trim();
+  const email=(document.getElementById('mu-email').value||'').trim().toLowerCase();
+  const role=document.getElementById('mu-role').value;
+  const isActive=document.getElementById('mu-active').value==='true';
+  const pass=document.getElementById('mu-pass').value;
+  const pass2=document.getElementById('mu-pass2').value;
+  if(!name||!email){alert('Name and email are required.');return;}
+  if(!_editUserId){
+    if(!pass){alert('Password is required for new users.');return;}
+    if(pass!==pass2){alert('Passwords do not match.');return;}
+  }
+  try{
+    if(!_editUserId){
+      const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'create_user',token:_authToken,email,full_name:name,role,password:pass})});
+      const d=await r.json();
+      if(!r.ok)throw new Error(d.error||'Failed to create user');
+      showToast('✓ User created','#27AE60');
+    }else{
+      const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'update_user',token:_authToken,id:_editUserId,full_name:name,role,is_active:isActive})});
+      const d=await r.json();
+      if(!r.ok)throw new Error(d.error||'Failed to update user');
+      showToast('✓ User updated','#27AE60');
     }
-    el.innerHTML=`<table style="width:100%;font-size:13px;border-collapse:collapse">
-      <thead><tr style="background:#f8f8f8;border-bottom:2px solid #ebebeb">
-        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Email</th>
-        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Full Name</th>
-        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Role</th>
-        <th style="padding:8px 12px"></th>
-      </tr></thead>
-      <tbody>${users.map(u=>`<tr style="border-bottom:1px solid #f4f4f4">
-        <td style="padding:8px 12px;font-size:12px">${u.email}</td>
-        <td style="padding:8px 12px;font-weight:600">${u.full_name||'—'}</td>
-        <td style="padding:8px 12px"><span class="role-badge ${u.role}">${u.role==='admin'?'👑 Admin':u.role==='trainer'?'✏ Trainer':'👁 Viewer'}</span></td>
-        <td style="padding:8px 12px;text-align:right">
-          <select onchange="changeUserRole('${u.email}',this.value)" style="font-size:11.5px;padding:3px 6px;border:1px solid #e0e0e0;border-radius:4px;outline:none">
-            <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
-            <option value="trainer"${u.role==='trainer'?' selected':''}>Trainer</option>
-            <option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option>
-          </select>
-        </td>
-      </tr>`).join('')}</tbody></table>`;
-  }catch(e){el.innerHTML=`<div class="ib w">Could not load users: ${e.message}</div>`;}
+    cM('m-user');rUsers();
+  }catch(e){alert('Error: '+e.message);}
 }
 
-async function changeUserRole(email,role){
+async function deleteUser(id,name){
+  if(!confirm('Delete user "'+name+'"? This cannot be undone.'))return;
   try{
-    await fetch('/api/db?table=app_users&email=eq.'+encodeURIComponent(email),{
-      method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({role})
-    });
-    showToast('✓ Role updated','#27AE60',2000);loadAppUsers();
-  }catch(e){showToast('Failed: '+e.message,'#C8102E');}
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'delete_user',token:_authToken,id})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Failed');
+    showToast('User deleted','#E67E22');rUsers();
+  }catch(e){alert('Error: '+e.message);}
 }
 
-async function inviteUser(){
-  if(!requireRole('admin'))return;
-  const email=(document.getElementById('nu-email').value||'').trim();
-  const name=(document.getElementById('nu-name').value||'').trim();
-  const role=document.getElementById('nu-role').value;
-  if(!email){alert('Please enter an email.');return;}
+function openChangePwd(id,name){
+  document.getElementById('m-chpwd').dataset.uid=id;
+  document.getElementById('chpwd-name').textContent='Change password for: '+name;
+  document.getElementById('chpwd-new').value='';
+  document.getElementById('chpwd-confirm').value='';
+  document.getElementById('m-chpwd').classList.add('open');
+}
+
+async function doAdminChangePassword(){
+  const id=document.getElementById('m-chpwd').dataset.uid;
+  const np=document.getElementById('chpwd-new').value;
+  const cp=document.getElementById('chpwd-confirm').value;
+  if(!np){alert('Enter new password.');return;}
+  if(np!==cp){alert('Passwords do not match.');return;}
   try{
-    await fetch('/api/db?table=app_users',{
-      method:'POST',headers:{'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
-      body:JSON.stringify({email,full_name:name,role})
-    });
-    showToast('✓ User saved. Create their login via Supabase Dashboard → Auth → Users.','#27AE60',5000);
-    document.getElementById('nu-email').value='';
-    document.getElementById('nu-name').value='';
-    loadAppUsers();
-  }catch(e){showToast('Failed: '+e.message,'#C8102E',4000);}
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'update_user',token:_authToken,id,password:np})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Failed');
+    showToast('✓ Password changed','#27AE60');cM('m-chpwd');
+  }catch(e){alert('Error: '+e.message);}
 }
 
-function renderUsers(){ loadAppUsers(); }
+// Legacy renderUsers called from rSet — redirect to rUsers
+function renderUsers(){ if(currentUser?.role==='admin') rUsers(); }
+function loadAppUsers(){ rUsers(); }
+function inviteUser(){ openAddUser(); }
 
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
@@ -2534,6 +2962,19 @@ async function initSync(){
   if(ok){rDash();rEmp();updSbf();updateSyncStatus('saved');showToast('☁ Synced from cloud successfully','#0078d4',3000);}
   else updateSyncStatus('offline');
 }
+
+// Check for public verify mode immediately (before any auth)
+(function(){
+  const isPublicVerify = window.location.pathname==='/verify'
+    || window.location.search.includes('id=')
+    || window.location.search.includes('emp=');
+  if(isPublicVerify){
+    document.body.classList.add('verify-mode');
+    // Hide login screen immediately
+    const ls=document.getElementById('login-screen');
+    if(ls) ls.classList.add('hidden');
+  }
+})();
 
 openIDB().then(async()=>{
   loadUsers();
@@ -2550,7 +2991,7 @@ openIDB().then(async()=>{
         if(r.ok){
           const u=await r.json();
           _authToken=saved.token;
-          currentUser={username:u.email,role:u.role,label:u.full_name||u.email};
+          currentUser={id:u.id,username:u.email,role:u.role,label:u.full_name||u.email};
           applyRole();
           document.getElementById('login-screen').classList.add('hidden');
         }else{
@@ -2578,13 +3019,46 @@ openIDB().then(async()=>{
   setTimeout(()=>{ if(!currentUser){ const f=document.getElementById('l-user');if(f)f.focus(); }},100);
 });
 
+// ─── Mobile Sidebar ──────────────────────────────────────────────────────────
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  sb.classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+}
+// Close sidebar on nav link click (mobile)
+document.querySelectorAll('.nav-lnk').forEach(a=>a.addEventListener('click',()=>{
+  if(window.innerWidth<=768) closeSidebar();
+}));
+// Close sidebar on escape
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSidebar(); });
+
+// ─── Public Verify Mode ───────────────────────────────────────────────────────
+function enterVerifyMode(){
+  document.body.classList.add('verify-mode');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const vp=document.getElementById('page-verify');
+  if(vp) vp.classList.add('active');
+  // Show public branding header + footer
+  const ph=document.getElementById('verify-public-header');
+  if(ph) ph.style.display='block';
+  const bl=document.getElementById('verify-back-link');
+  if(bl) bl.style.display='block';
+  // Set page title
+  document.title='Verify Certificate — OpCertMS';
+  checkVerifyFromURL();
+}
+
 // Safety net
 setTimeout(()=>{
   if(!currentUser){
-    // Allow public verify page without login
-    if(window.location.pathname==='/verify'||window.location.search.includes('id=')){
-      document.getElementById('login-screen').classList.add('hidden');
-      nav('verify');
+    // Allow public verify page without login (QR scan)
+    const isPublicVerify = window.location.pathname==='/verify'
+      || window.location.search.includes('id=')
+      || window.location.search.includes('emp=');
+    if(isPublicVerify){
+      enterVerifyMode();
       return;
     }
     const ls=document.getElementById('login-screen');
