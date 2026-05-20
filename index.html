@@ -345,7 +345,6 @@ body.role-trainer #page-import{display:none!important}
     
     <div id="sync-status-dot" style="width:9px;height:9px;border-radius:50%;background:#aaa;flex-shrink:0"></div>
     <span id="sync-status-label" style="font-size:11.5px;color:#888;white-space:nowrap">○ Offline</span>
-    <button class="tbtn ghost" onclick="expData()">↓ Export JSON</button><button class="tbtn ghost" onclick="importJSON()" title="Restore from JSON file">↑ Import JSON</button>
     <button class="tbtn red" id="mab" onclick="mAct()">+ Add New</button>
   </div>
   <div id="content">
@@ -571,7 +570,7 @@ body.role-trainer #page-import{display:none!important}
         <div style="display:flex;gap:10px;align-items:end">
           <div class="fl" style="flex:1">
             <label>Certificate ID</label>
-            <input type="text" id="verify-id-inp" placeholder="e.g. CERT-2024-0001"
+            <input type="text" id="verify-id-inp" placeholder="CERT-2024-0001 or EMP-001"
               onkeydown="if(event.key==='Enter')verifyCert()">
           </div>
           <button class="btn bp" onclick="verifyCert()" style="height:36px">🔍 Verify</button>
@@ -580,7 +579,7 @@ body.role-trainer #page-import{display:none!important}
       </div>
     </div>
     <div class="ib" style="margin-top:0">
-      💡 Scan the QR code on any certificate card to verify instantly, or enter the Certificate ID manually above.
+      💡 Scan the QR code on any certificate card to verify instantly, or enter a <strong>Certificate ID</strong> (CERT-...) or <strong>Employee ID</strong> (EMP-...) to see all certificates for that employee.
     </div>
   </div>
 </div>
@@ -644,15 +643,7 @@ body.role-trainer #page-import{display:none!important}
         </div>
       </div>
       <div class="box-body">
-        <div class="ib s" style="margin-bottom:14px">
-          <strong>Setup (one-time, ~5 minutes):</strong><br>
-          1. <a href="https://supabase.com" target="_blank" style="color:#27AE60">supabase.com</a> → New Project (free tier)<br>
-          2. SQL Editor → Run <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px">supabase_schema.sql</code><br>
-          3. Settings → API → copy <strong>Project URL</strong> + <strong>anon key</strong><br>
-          4. Vercel Dashboard → Project → <strong>Settings → Environment Variables</strong><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;Add: <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px">SUPABASE_URL</code> and <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px">SUPABASE_KEY</code><br>
-          5. Redeploy → Done ✓
-        </div>
+
         <div style="margin-top:14px;display:flex;gap:9px;align-items:center;flex-wrap:wrap">
           <button class="btn bsp" onclick="manualPush()">☁ Push All Data</button>
           <button class="btn bs"  onclick="manualPull()">↓ Pull Data</button>
@@ -699,7 +690,9 @@ body.role-trainer #page-import{display:none!important}
           <strong>Roles:</strong><br>
           👑 <strong>Admin</strong> — Full access: view, add, edit, delete, settings<br>
           ✏ <strong>Trainer</strong> — Issue &amp; renew certificates only<br>
-          👁 <strong>Viewer</strong> — Read-only access
+          👁 <strong>Viewer</strong> — Read-only access<br><br>
+          ⚠ <strong>Note:</strong> App users (login accounts) are <em>separate</em> from employees.
+          An employee does not need an account to have certificates. Only staff who need to <em>manage</em> the system require an account.
         </div>
       </div>
     </div>
@@ -1606,11 +1599,11 @@ function buildEmpCard(emp){
     +row(68.71, 5.34, pRow, 'overflow:visible')
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
-    // QR code — top right corner, z-index:3
-    +(sc.length>0 ? '<div style="'+Z+'top:69%;right:1%;width:14%;height:16%;z-index:3;display:flex;align-items:center;justify-content:center">'
-      +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&color=000000&bgcolor=ffffff&data='+
-      encodeURIComponent(window.location.origin+'/verify?id='+sc[0].id)+
-      '" style="width:100%;height:100%;object-fit:contain" title="Scan to verify certificate"></div>' : '')
+    // QR code — links to employee verify page (shows all certs)
+    +'<div style="'+Z+'top:70%;right:0;width:13%;height:13%;z-index:3;padding:1px;display:flex;align-items:center;justify-content:center">'
+    +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&qzone=1&data='
+    +encodeURIComponent(window.location.origin+'/verify?emp='+emp.id)
+    +'" style="width:100%;height:100%;object-fit:contain" title="Scan to verify"></div>'
     +'</div>'
   );
 }
@@ -2393,28 +2386,145 @@ async function manualPush(){
   else{showToast('✗ Save failed — check config','#C0392B',3500);updateSyncStatus('error');}
 }
 
-// ─── Export / Import JSON (offline backup) ───────────────────────────────────
-function expData(){
-  const out={...DB,emps:DB.emps.map(e=>({...e,photo:''}))};
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
-  a.download='opcertms_backup.json';a.click();
+// ─── Verify Certificate (public) ─────────────────────────────────────────────
+function _stColor(s){ return s==='valid'?'#27AE60':s==='expiring_soon'?'#E67E22':'#C8102E'; }
+function _stIcon(s){  return s==='valid'?'✅':s==='expiring_soon'?'⚠️':'❌'; }
+function _stLabel(s){ return s==='valid'?'VALID':s==='expiring_soon'?'EXPIRING SOON':'EXPIRED'; }
+function _dLabel(d){  return d<0?'Expired '+Math.abs(d)+' days ago':d+' days remaining'; }
+
+function _certCard(c){
+  const col=_stColor(c.status);
+  return `<div style="border:2px solid ${col};border-radius:10px;overflow:hidden;margin-bottom:10px">
+    <div style="background:${col};padding:9px 13px;display:flex;align-items:center;gap:9px">
+      <span style="font-size:18px">${_stIcon(c.status)}</span>
+      <div style="flex:1">
+        <div style="font-size:12.5px;font-weight:800;color:#fff">${_stLabel(c.status)}</div>
+        <div style="font-size:10.5px;color:rgba(255,255,255,.8)">${_dLabel(c.days_left)}</div>
+      </div>
+      <div style="font-family:monospace;font-size:9.5px;color:rgba(255,255,255,.7)">${c.id}</div>
+    </div>
+    <div style="padding:11px 13px;background:#fff;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Process</div>
+        <div style="font-size:12.5px;font-weight:600">${c.process}</div></div>
+      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Level</div>
+        <div style="font-size:12.5px;font-weight:600">${c.level}</div></div>
+      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Issued</div>
+        <div style="font-size:12px">${fD(c.issued)}</div></div>
+      <div><div style="font-size:9.5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Expires</div>
+        <div style="font-size:12px;font-weight:600;color:${col}">${fD(c.expires)}</div></div>
+    </div>
+  </div>`;
 }
-function importJSON(){
-  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
-  inp.onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();r.onload=ev=>{
-      try{
-        const d=JSON.parse(ev.target.result);
-        if(d.emps)DB.emps=d.emps.map(e=>({...e,photo:''}));
-        if(d.procs)DB.procs=d.procs;if(d.certs)DB.certs=d.certs;
-        if(d.ctr!==undefined)DB.ctr=d.ctr;if(d.cfg)DB.cfg=d.cfg;if(d.src)DB.src=d.src;
-        saveDB();rDash();updSbf();
-        alert(`✓ Đã import!\n${DB.emps.length} employees, ${DB.certs.length} certs`);
-      }catch(err){alert('Error: '+err.message);}
-    };r.readAsText(f);
-  };inp.click();
+
+async function verifyCert(){
+  const inp=(document.getElementById('verify-id-inp').value||'').trim().toUpperCase();
+  const res=document.getElementById('verify-result');
+  if(!inp){res.innerHTML='<div class="ib w">Please enter a Certificate ID (CERT-...) or Employee ID (EMP-...).</div>';return;}
+  res.innerHTML='<div style="text-align:center;padding:20px;color:#aaa;font-size:13px">⟳ Verifying...</div>';
+  try{
+    const isCert=inp.startsWith('CERT');
+    const url=isCert?'/api/verify?id='+encodeURIComponent(inp):'/api/verify?emp='+encodeURIComponent(inp);
+    const r=await fetch(url);
+    const data=await r.json();
+    if(!r.ok||data.error){
+      res.innerHTML=`<div class="ib" style="border-left-color:#C8102E;background:#fdf2f2">
+        <div style="font-size:15px;font-weight:700;color:#C8102E;margin-bottom:4px">❌ Not Found</div>
+        <div style="font-size:12.5px;color:#666"><strong>${inp}</strong> was not found in the system.</div>
+      </div>`;
+      return;
+    }
+    if(data.type==='employee'){
+      const e=data.employee, certs=data.certificates||[];
+      const validN=certs.filter(c=>c.status==='valid').length;
+      res.innerHTML=`<div style="background:#f8f9fa;border-radius:10px;padding:13px 15px;margin-bottom:13px;border:1px solid #e8e8e8;display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:#e8f4fd;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#1565c0;flex-shrink:0">${e.name.charAt(0)}</div>
+        <div style="flex:1"><div style="font-size:15px;font-weight:700">${e.name}</div>
+          <div style="font-size:11.5px;color:#888">${e.id}${e.dept?' · '+e.dept:''}${e.position?' · '+e.position:''}</div></div>
+        <div style="text-align:right"><div style="font-size:24px;font-weight:800;color:#27AE60;line-height:1">${validN}</div>
+          <div style="font-size:10px;color:#aaa">valid cert${validN!==1?'s':''}</div></div>
+      </div>
+      ${certs.length?certs.map(_certCard).join(''):'<div class="ib w">No certificates found.</div>'}`;
+    }else{
+      const c=data.certificate;
+      const s={id:c.id,process:c.process,level:c.level,issued:c.issued,expires:c.expires,status:data.status,days_left:data.days_left};
+      res.innerHTML=`<div style="background:#f8f9fa;border-radius:10px;padding:11px 14px;margin-bottom:11px;border:1px solid #e8e8e8">
+        <div style="font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.5px">Employee</div>
+        <div style="font-size:14px;font-weight:700">${c.employee} <span style="font-size:11px;color:#aaa;font-weight:400;font-family:monospace">${c.employee_id||''}</span></div>
+      </div>${_certCard(s)}`;
+    }
+  }catch(e){res.innerHTML=`<div class="ib w">⚠ Verification failed: ${e.message}</div>`;}
 }
+
+function checkVerifyFromURL(){
+  const p=new URLSearchParams(window.location.search);
+  const val=p.get('id')||p.get('emp');
+  if(val){
+    const inp=document.getElementById('verify-id-inp');
+    if(inp){inp.value=val.toUpperCase();verifyCert();}
+  }
+}
+
+// ─── App Users (Supabase) ─────────────────────────────────────────────────────
+async function loadAppUsers(){
+  const el=document.getElementById('app-users-list');if(!el)return;
+  try{
+    const r=await fetch('/api/db?table=app_users&select=email,full_name,role,created_at&order=created_at');
+    const users=await r.json();
+    if(!Array.isArray(users)||!users.length){
+      el.innerHTML='<div style="text-align:center;color:#bbb;padding:12px;font-size:12.5px;font-style:italic">No users yet.</div>';return;
+    }
+    el.innerHTML=`<table style="width:100%;font-size:13px;border-collapse:collapse">
+      <thead><tr style="background:#f8f8f8;border-bottom:2px solid #ebebeb">
+        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Email</th>
+        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Full Name</th>
+        <th style="padding:8px 12px;text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:#999">Role</th>
+        <th style="padding:8px 12px"></th>
+      </tr></thead>
+      <tbody>${users.map(u=>`<tr style="border-bottom:1px solid #f4f4f4">
+        <td style="padding:8px 12px;font-size:12px">${u.email}</td>
+        <td style="padding:8px 12px;font-weight:600">${u.full_name||'—'}</td>
+        <td style="padding:8px 12px"><span class="role-badge ${u.role}">${u.role==='admin'?'👑 Admin':u.role==='trainer'?'✏ Trainer':'👁 Viewer'}</span></td>
+        <td style="padding:8px 12px;text-align:right">
+          <select onchange="changeUserRole('${u.email}',this.value)" style="font-size:11.5px;padding:3px 6px;border:1px solid #e0e0e0;border-radius:4px;outline:none">
+            <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
+            <option value="trainer"${u.role==='trainer'?' selected':''}>Trainer</option>
+            <option value="viewer"${u.role==='viewer'?' selected':''}>Viewer</option>
+          </select>
+        </td>
+      </tr>`).join('')}</tbody></table>`;
+  }catch(e){el.innerHTML=`<div class="ib w">Could not load users: ${e.message}</div>`;}
+}
+
+async function changeUserRole(email,role){
+  try{
+    await fetch('/api/db?table=app_users&email=eq.'+encodeURIComponent(email),{
+      method:'PATCH',headers:{'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({role})
+    });
+    showToast('✓ Role updated','#27AE60',2000);loadAppUsers();
+  }catch(e){showToast('Failed: '+e.message,'#C8102E');}
+}
+
+async function inviteUser(){
+  if(!requireRole('admin'))return;
+  const email=(document.getElementById('nu-email').value||'').trim();
+  const name=(document.getElementById('nu-name').value||'').trim();
+  const role=document.getElementById('nu-role').value;
+  if(!email){alert('Please enter an email.');return;}
+  try{
+    await fetch('/api/db?table=app_users',{
+      method:'POST',headers:{'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify({email,full_name:name,role})
+    });
+    showToast('✓ User saved. Create their login via Supabase Dashboard → Auth → Users.','#27AE60',5000);
+    document.getElementById('nu-email').value='';
+    document.getElementById('nu-name').value='';
+    loadAppUsers();
+  }catch(e){showToast('Failed: '+e.message,'#C8102E',4000);}
+}
+
+function renderUsers(){ loadAppUsers(); }
+
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 async function initSync(){
