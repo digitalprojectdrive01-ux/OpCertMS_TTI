@@ -12,7 +12,8 @@
 body{font-family:'DM Sans',sans-serif;background:#f2f2f2;color:#111;display:flex;height:100vh;overflow:hidden}
 /* SIDEBAR */
 #sidebar{width:var(--sidebar);background:var(--dark);display:flex;flex-direction:column;flex-shrink:0}
-.sb-logo{padding:18px 16px 14px;border-bottom:1px solid #2e2e2e}
+.sb-logo{padding:12px 16px 10px;border-bottom:1px solid #2e2e2e}
+.sb-logo img{width:130px;height:auto;display:block;margin-bottom:4px;filter:brightness(0) invert(1)}
 .sb-logo h1{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#fff;letter-spacing:1px;line-height:1.2}
 .sb-logo span{font-size:9px;color:#666;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:1px}
 .sb-nav{flex:1;padding:10px 0;overflow-y:auto}
@@ -381,7 +382,8 @@ body.verify-mode #page-verify .box{
 <div id="login-screen">
   <div class="login-box">
     <div class="login-header">
-      <h1>OpCertMS</h1>
+      <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Techtronic_Industries_logo.png" alt="TTI Group" style="max-width:180px;height:auto;display:block;margin:0 auto 8px;filter:brightness(0) invert(1)">
+      <h1 style="font-size:13px;letter-spacing:1px;margin-bottom:2px">OpCertMS</h1>
       <p>Operation Certificate Management</p>
     </div>
     <div class="login-body">
@@ -412,7 +414,7 @@ body.verify-mode #page-verify .box{
   </div>
 </div>
 <nav id="sidebar">
-  <div class="sb-logo"><h1>OpCertMS</h1><span>TTI Group | AES — OpCertMS</span></div>
+  <div class="sb-logo"><img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Techtronic_Industries_logo.png" alt="TTI" style="width:120px;height:auto;filter:brightness(0) invert(1);margin-bottom:4px"><span>OpCertMS — Cert Management</span></div>
   <div class="sb-nav">
     <a class="nav-lnk active" data-p="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
     <div class="sb-sec">Management</div>
@@ -471,6 +473,7 @@ body.verify-mode #page-verify .box{
       <input type="text" placeholder="Search employees..." id="esrch" oninput="rEmp()">
       <select id="edept" onchange="rEmp()"><option value="">All Departments</option></select>
       <span style="margin-left:auto;font-size:11.5px;color:#bbb" id="ecnt"></span>
+      <button class="btn bs edit-only" onclick="openImportModal('employees')" style="height:30px;font-size:11.5px;padding:0 10px;white-space:nowrap">📥 Import Excel</button>
     </div>
     <table><thead><tr><th>Ảnh</th><th>Emp ID</th><th>Full Name</th><th>Departments</th><th>Position</th><th>Join Date</th><th>Status</th><th># Certs</th><th></th></tr></thead>
     <tbody id="etb"></tbody></table>
@@ -526,7 +529,10 @@ body.verify-mode #page-verify .box{
 <!-- PROCESSES -->
 <div id="page-processes" class="page">
   <div class="tw">
-    <div class="tb"><input type="text" placeholder="Search processes..." id="psrch" oninput="rProc()"></div>
+    <div class="tb">
+      <input type="text" placeholder="Search processes..." id="psrch" oninput="rProc()">
+      <button class="btn bs edit-only" onclick="openImportModal('processes')" style="margin-left:auto;height:30px;font-size:11.5px;padding:0 10px;white-space:nowrap">📥 Import Excel</button>
+    </div>
     <table><thead><tr><th>Proc ID</th><th>Process Name</th><th>Category</th><th>Validity</th><th>Description</th><th>Status</th><th></th></tr></thead>
     <tbody id="ptb"></tbody></table>
   </div>
@@ -538,6 +544,7 @@ body.verify-mode #page-verify .box{
     <div class="tb">
       <input type="text" placeholder="Search certificates..." id="csrch" oninput="rCert()">
       <select id="csflt" onchange="rCert()"><option value="">All Statuses</option><option>Valid</option><option>Expiring Soon</option><option>Expired</option></select>
+      <button class="btn bs edit-only" onclick="openImportModal('certs')" style="margin-left:auto;height:30px;font-size:11.5px;padding:0 10px;white-space:nowrap">📥 Import Excel</button>
     </div>
     <table><thead><tr><th>Cert ID</th><th>Employees</th><th>Processes</th><th>Level</th><th>Issue Date</th><th>Expiry</th><th>Status</th><th></th></tr></thead>
     <tbody id="ctb"></tbody></table>
@@ -772,6 +779,62 @@ body.verify-mode #page-verify .box{
     <!-- Back link in verify-mode -->
     <div id="verify-back-link" style="display:none;text-align:center;padding:14px 0;font-size:12px;color:#aaa">
       Powered by <strong style="color:var(--dark)">OpCertMS</strong> · TTI Group | AES
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: INLINE IMPORT (Employees / Processes / Certs) -->
+<div class="mo" id="m-import-inline">
+  <div class="md" style="width:720px;max-width:96vw">
+    <div class="mh">
+      <h3 id="m-import-title">IMPORT DATA</h3>
+      <button onclick="cM('m-import-inline')">✕</button>
+    </div>
+    <div class="mb" style="padding:14px 18px">
+
+      <!-- Step 1: Upload -->
+      <div class="box" style="margin-bottom:12px">
+        <div class="box-hdr"><div class="step-num">1</div><h3 style="font-size:13px;font-weight:600">Upload file Excel</h3></div>
+        <div class="box-body">
+          <div class="dz" id="im-dz" style="padding:18px 14px;cursor:pointer">
+            <input type="file" id="im-file" accept=".xlsx,.xls,.csv" onchange="imHandleXL(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+            <div class="di" style="font-size:28px">📊</div>
+            <p style="font-size:13px;color:#666;margin:4px 0 2px">Drag & drop hoặc click để chọn file Excel</p>
+            <small style="font-size:11.5px;color:#bbb">Hỗ trợ .xlsx, .xls, .csv</small>
+          </div>
+          <div id="im-xinfo" style="display:none;margin-top:9px;padding:9px 12px;background:#f0fff4;border-radius:7px;border:1px solid #b7e4c7;font-size:12.5px"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Sheet -->
+      <div id="im-s-sheet" style="display:none" class="box" style="margin-bottom:12px">
+        <div class="box-hdr"><div class="step-num">2</div><h3 style="font-size:13px;font-weight:600">Chọn Sheet & Preview</h3></div>
+        <div class="box-body">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <label style="font-size:12.5px;font-weight:600;color:#666">Sheet:</label>
+            <select id="im-shsel" onchange="imLoadPreview()" style="padding:5px 10px;border:1px solid #e0e0e0;border-radius:5px;font-size:12.5px;outline:none"></select>
+            <span id="im-shcnt" style="font-size:11.5px;color:#bbb"></span>
+          </div>
+          <div id="im-pvcon" style="overflow-x:auto;max-height:140px;overflow-y:auto">
+            <table id="im-pvtbl" style="width:100%;border-collapse:collapse;font-size:11px"></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Mapping -->
+      <div id="im-s-map" style="display:none" class="box">
+        <div class="box-hdr"><div class="step-num">3</div><h3 style="font-size:13px;font-weight:600">Map cột Excel → Trường hệ thống</h3></div>
+        <div class="box-body">
+          <div class="ib" style="margin-bottom:10px;font-size:12px">Chọn cột tương ứng cho mỗi trường. Chọn "(Bỏ qua)" nếu không có.</div>
+          <div id="im-mapform" style="display:grid;grid-template-columns:1fr 24px 1fr;gap:7px 6px;align-items:center"></div>
+          <div id="im-result" style="display:none;margin-top:12px;padding:10px 13px;background:#f0fff4;border-radius:7px;border:1px solid #b7e4c7;font-size:13px"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="mf">
+      <button class="btn bs" onclick="cM('m-import-inline')">Đóng</button>
+      <button class="btn bg" id="im-btn-do" onclick="doImportInline()" style="display:none">✓ Import</button>
     </div>
   </div>
 </div>
@@ -2100,7 +2163,7 @@ async function doLogin(){
     if(!r.ok) throw new Error(data.error||'Login failed');
     _authToken  = data.token;
     currentUser = { id:data.user.id, username:data.user.email, role:data.user.role, label:data.user.full_name||data.user.email };
-    try{sessionStorage.setItem('opcertms_sess', JSON.stringify({token:_authToken,user:currentUser}));}catch(e){}
+    try{localStorage.setItem('opcertms_sess', JSON.stringify({token:_authToken,user:currentUser}));}catch(e){}
     err.classList.remove('show');
     applyRole();
     document.getElementById('login-screen').classList.add('hidden');
@@ -2118,7 +2181,7 @@ async function doLogout(){
   if(!confirm('Logout?'))return;
   if(_authToken) await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',token:_authToken})}).catch(()=>{});
   currentUser=null; _authToken=null;
-  try{sessionStorage.removeItem('opcertms_sess');}catch(e){}
+  try{localStorage.removeItem('opcertms_sess');}catch(e){}
   document.getElementById('l-user').value='';
   document.getElementById('l-pass').value='';
   document.getElementById('login-screen').classList.remove('hidden');
@@ -2575,6 +2638,181 @@ const _oEmp0=oEmp;       oEmp=function(id){if(!requireRole('admin'))return;_oEmp
 const _oProc0=oProc;     oProc=function(id){if(!requireRole('admin'))return;_oProc0(id);};
 const _oCert0=oCert;     oCert=function(){if(!requireRole('admin','trainer'))return;_oCert0();};
 
+// ─── INLINE IMPORT MODAL ─────────────────────────────────────────────────────
+let imWB=null, imCols=[], imType='employees';
+
+// Field definitions cho từng loại
+const IM_FDEFS={
+  employees:[
+    {k:'id',   l:'Mã Employees',   req:true,  h:['employee id','emp id','mã nv','mã employees','id','employee_id','mã nhân viên']},
+    {k:'name', l:'Full Name',      req:true,  h:['full name','họ tên','name','tên','fullname','ho ten','họ và tên']},
+    {k:'dept', l:'Departments',    req:false, h:['department','bộ phận','dept','bo phan','phòng ban']},
+    {k:'pos',  l:'Position',       req:false, h:['position','chức danh','job title','title','chức vụ']},
+    {k:'dob',  l:'Date of Birth',  req:false, h:['date of birth','dob','ngày sinh','ngay sinh','birthday']},
+    {k:'join', l:'Join Date',      req:false, h:['join date','ngày vào','hire date','start date','ngay vao']},
+    {k:'phone',l:'Phone',          req:false, h:['phone','số điện thoại','sdt','mobile','tel']},
+    {k:'status',l:'Status',        req:false, h:['status','trạng thái','trang thai','active']},
+    {k:'email',l:'Email',          req:false, h:['email','e-mail','mail']},
+  ],
+  processes:[
+    {k:'id',   l:'Process ID',     req:true,  h:['process id','proc id','id','mã quy trình','mã','ma']},
+    {k:'name', l:'Process Name',   req:true,  h:['process name','name','tên quy trình','ten','tên']},
+    {k:'cat',  l:'Category',       req:false, h:['category','loại','danh mục','cat','loai']},
+    {k:'vl',   l:'Validity (months)',req:false,h:['validity','hiệu lực','months','tháng','valid months','thời hạn']},
+    {k:'desc', l:'Description',    req:false, h:['description','mô tả','mo ta','ghi chú','note']},
+    {k:'status',l:'Status',        req:false, h:['status','trạng thái','trang thai']},
+  ],
+  certs:[
+    {k:'eid',  l:'Employee ID',    req:true,  h:['employee id','emp id','mã nv','mã employees','eid','employee_id']},
+    {k:'pid',  l:'Process ID',     req:true,  h:['process id','proc id','pid','mã quy trình']},
+    {k:'lv',   l:'Level',          req:false, h:['level','cấp độ','cap do','lv','cấp']},
+    {k:'iss',  l:'Issue Date',     req:false, h:['issue date','ngày cấp','issued','ngay cap','date']},
+  ],
+};
+
+const IM_TITLES={employees:'IMPORT EMPLOYEES',processes:'IMPORT PROCESSES',certs:'IMPORT CERTIFICATES'};
+
+function openImportModal(type){
+  if(!requireRole('admin'))return;
+  imType=type; imWB=null; imCols=[];
+  document.getElementById('m-import-title').textContent=IM_TITLES[type]||'IMPORT DATA';
+  // Reset UI
+  document.getElementById('im-xinfo').style.display='none';
+  document.getElementById('im-s-sheet').style.display='none';
+  document.getElementById('im-s-map').style.display='none';
+  document.getElementById('im-result').style.display='none';
+  document.getElementById('im-btn-do').style.display='none';
+  document.getElementById('im-file').value='';
+  document.getElementById('m-import-inline').classList.add('open');
+  // Drag-drop
+  const dz=document.getElementById('im-dz');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');},{once:false});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'),{once:false});
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer?.files[0];if(f)imProcXL(f);},{once:false});
+}
+
+function imHandleXL(e){const f=e.target.files[0];if(f)imProcXL(f);}
+
+function imProcXL(f){
+  const xi=document.getElementById('im-xinfo');
+  xi.style.display='block';
+  xi.innerHTML=`<span class="tg">✓</span> <strong>${f.name}</strong> — ${(f.size/1024).toFixed(1)} KB`;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      imWB=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+      const ss=document.getElementById('im-shsel');
+      ss.innerHTML=imWB.SheetNames.map(s=>`<option>${s}</option>`).join('');
+      document.getElementById('im-s-sheet').style.display='';
+      imLoadPreview();
+    }catch(err){xi.innerHTML=`<span class="tr">✕ Lỗi: ${err.message}</span>`;}
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function imLoadPreview(){
+  if(!imWB)return;
+  const ws=imWB.Sheets[document.getElementById('im-shsel').value];
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(!rows.length)return;
+  imCols=rows[0].map(String);
+  document.getElementById('im-shcnt').textContent=`${rows.length-1} dòng`;
+  // Preview table
+  const tbl=document.getElementById('im-pvtbl');
+  tbl.innerHTML=`<thead><tr>${imCols.map(c=>`<th style="background:#f8f8f8;padding:4px 8px;border:1px solid #e8e8e8;font-size:10.5px;color:#888">${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.slice(1,5).map(r=>`<tr>${imCols.map((_,i)=>`<td style="padding:4px 8px;border:1px solid #f0f0f0;color:#555;font-size:11px">${r[i]||''}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  document.getElementById('im-s-map').style.display='';
+  imBuildMap();
+}
+
+function imAutoMap(hints){
+  const lc=imCols.map(c=>c.toLowerCase().trim());
+  for(const h of hints){const i=lc.findIndex(c=>c===h||c.includes(h));if(i>=0)return imCols[i];}
+  return'';
+}
+
+function imBuildMap(){
+  const fdefs=IM_FDEFS[imType]||[];
+  const form=document.getElementById('im-mapform');
+  form.innerHTML=fdefs.map(f=>{
+    const auto=imAutoMap(f.h);
+    const opts=`<option value="">(Bỏ qua)</option>`+imCols.map(c=>`<option${c===auto?' selected':''}>${c}</option>`).join('');
+    return`<div class="fn" style="font-size:12px;font-weight:600;color:#555">${f.l}${f.req?'<span class="tr"> *</span>':''}</div>
+      <div class="ar" style="text-align:center;color:#bbb;font-size:14px">→</div>
+      <select id="im-mp-${f.k}" style="padding:5px 9px;border:1px solid #e0e0e0;border-radius:5px;font-size:12.5px;outline:none">${opts}</select>`;
+  }).join('');
+  document.getElementById('im-result').style.display='none';
+  document.getElementById('im-btn-do').style.display='';
+}
+
+function doImportInline(){
+  if(!imWB)return;
+  const ws=imWB.Sheets[document.getElementById('im-shsel').value];
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+  const fdefs=IM_FDEFS[imType]||[];
+  const mp={};
+  fdefs.forEach(f=>{mp[f.k]=(document.getElementById('im-mp-'+f.k)||{}).value||'';});
+
+  let add=0,upd=0,skip=0,errs=[];
+  const resultEl=document.getElementById('im-result');
+
+  if(imType==='employees'){
+    if(!mp.id||!mp.name){alert('Cần chọn cột Mã Employees và Full Name!');return;}
+    rows.forEach((row,i)=>{
+      const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
+      if(!id||!name){skip++;return;}
+      const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',
+        dob:mp.dob?String(row[mp.dob]||''):'',join:mp.join?String(row[mp.join]||''):'',
+        phone:mp.phone?String(row[mp.phone]||''):'',status:mp.status?String(row[mp.status]||'Active'):'Active',
+        email:mp.email?String(row[mp.email]||''):'',photo:''};
+      const idx=DB.emps.findIndex(e=>e.id===id);
+      if(idx>=0){const ph=DB.emps[idx].photo;DB.emps[idx]={...em,photo:ph};upd++;}else{DB.emps.push(em);add++;}
+    });
+    rEmp();rDash();saveDB();
+    resultEl.style.display='';
+    resultEl.innerHTML=`<strong>✓ Import Employees xong!</strong><br>Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+
+  } else if(imType==='processes'){
+    if(!mp.id||!mp.name){alert('Cần chọn cột Process ID và Process Name!');return;}
+    rows.forEach(row=>{
+      const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
+      if(!id||!name){skip++;return;}
+      const obj={id,name,cat:mp.cat?String(row[mp.cat]||''):'General',
+        vl:mp.vl?parseInt(row[mp.vl])||12:12,
+        desc:mp.desc?String(row[mp.desc]||''):'',
+        status:mp.status?String(row[mp.status]||'Active'):'Active'};
+      const idx=DB.procs.findIndex(p=>p.id===id);
+      if(idx>=0){DB.procs[idx]=obj;upd++;}else{DB.procs.push(obj);add++;}
+    });
+    rProc();saveDB();
+    resultEl.style.display='';
+    resultEl.innerHTML=`<strong>✓ Import Processes xong!</strong><br>Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+
+  } else if(imType==='certs'){
+    if(!mp.eid||!mp.pid){alert('Cần chọn cột Employee ID và Process ID!');return;}
+    rows.forEach(row=>{
+      const eid=String(row[mp.eid]||'').trim(),pid=String(row[mp.pid]||'').trim();
+      if(!eid||!pid){skip++;return;}
+      const em=DB.emps.find(e=>e.id===eid);
+      const pr=DB.procs.find(p=>p.id===pid);
+      if(!em){errs.push(`EMP không tìm thấy: ${eid}`);skip++;return;}
+      if(!pr){errs.push(`Process không tìm thấy: ${pid}`);skip++;return;}
+      const rawLv=mp.lv?String(row[mp.lv]||'').trim():'';
+      const lv=rawLv||'Level 1';
+      const iss=mp.iss?String(row[mp.iss]||'').trim():today();
+      const issDate=iss&&iss.match(/\d{4}[-\/]\d{2}[-\/]\d{2}/)?iss.replace(/\//g,'-'):today();
+      const c={id:nCId(),eid,enm:em.name,pid,pnm:pr.name,lv,iss:issDate,exp:aM(issDate,pr.vl),by:'Import'};
+      DB.certs.push(c);add++;
+    });
+    rCert();rDash();saveDB();
+    let msg=`<strong>✓ Import Certificates xong!</strong><br>Thêm: <strong>${add}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+    if(errs.length)msg+=`<br><small style="color:var(--red)">${errs.slice(0,5).join(', ')}${errs.length>5?`... +${errs.length-5} lỗi`:''}</small>`;
+    resultEl.style.display='';
+    resultEl.innerHTML=msg;
+  }
+  document.getElementById('im-btn-do').style.display='none';
+}
+
 // ─── User management ─────────────────────────────────────────────────────────
 function renderUsers(){
   const el=document.getElementById('users-tbody');if(!el)return;
@@ -2891,21 +3129,35 @@ openIDB().then(async()=>{
   loadSyncCfg();
   // Restore session via token verify
   try{
-    const raw=sessionStorage.getItem('opcertms_sess');
+    const raw=localStorage.getItem('opcertms_sess');
     if(raw){
       const saved=JSON.parse(raw);
-      if(saved.token){
-        const r=await fetch('/api/auth',{method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'verify',token:saved.token})});
-        if(r.ok){
-          const u=await r.json();
-          _authToken=saved.token;
-          currentUser={id:u.id,username:u.email,role:u.role,label:u.full_name||u.email};
-          applyRole();
-          document.getElementById('login-screen').classList.add('hidden');
-        }else{
-          sessionStorage.removeItem('opcertms_sess');
+      if(saved.token && saved.user){
+        // Restore UI immediately from saved data (no flicker on refresh)
+        _authToken=saved.token;
+        currentUser=saved.user;
+        applyRole();
+        document.getElementById('login-screen').classList.add('hidden');
+        // Verify token in background — only force logout on explicit 401/403
+        try{
+          const r=await fetch('/api/auth',{method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action:'verify',token:saved.token})});
+          if(r.ok){
+            const u=await r.json();
+            currentUser={id:u.id,username:u.email,role:u.role,label:u.full_name||u.email};
+            localStorage.setItem('opcertms_sess',JSON.stringify({token:_authToken,user:currentUser}));
+            applyRole();
+          }else if(r.status===401||r.status===403){
+            // Token truly invalid — force logout
+            _authToken=null; currentUser=null;
+            localStorage.removeItem('opcertms_sess');
+            document.getElementById('login-screen').classList.remove('hidden');
+          }
+          // Any other error (5xx, network timeout) — keep user logged in
+        }catch(netErr){
+          // Network offline — keep saved session, do not logout
+          console.warn('Token verify offline, keeping session:', netErr);
         }
       }
     }
