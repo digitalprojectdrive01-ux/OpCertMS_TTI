@@ -388,7 +388,7 @@ body.verify-mode #page-verify .box{
       <!-- Login -->
       <div class="login-field">
         <label>Email</label>
-        <input type="email" id="l-user" placeholder="your.name@TTIGroup.com.vn"
+        <input type="email" id="l-user" placeholder="your@email.com"
           autocomplete="username"
           onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()">
       </div>
@@ -771,7 +771,7 @@ body.verify-mode #page-verify .box{
 
     <!-- Back link in verify-mode -->
     <div id="verify-back-link" style="display:none;text-align:center;padding:14px 0;font-size:12px;color:#aaa">
-      Powered by <strong style="color:var(--dark)">OpCertMS</strong> · TTI Group | AES
+      Powered by <strong style="color:var(--dark)">OpCertMS</strong> · TTI Group AES
     </div>
   </div>
 </div>
@@ -1690,13 +1690,12 @@ function buildEmpCard(emp){
     ? '<img src="'+emp.photo+'" style="width:100%;height:100%;object-fit:contain;display:block">'
     : '<div style="width:100%;height:100%;background:#e0e0e0;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
 
-  const sc  = certs.slice(0,4);
-  const n   = sc.length;  // 0,1,2,3,4 — không dùng ||1 để tránh lỗi sc[0] undefined
+  const scAll = certs.slice(0,4);
+  const n     = scAll.length;
+  const nCols = Math.min(n, 3);  // max 3 cols (template has 3 data columns)
+  const sc    = scAll.slice(0, nCols); // only show max 3 certs
   const lvN = lv => { const m=lv.match(/Level\s*(\d)/i); return m?'Lv'+m[1]:''; };
-  // Template has 3 equal data columns (25% each = 75% total)
-  // For n certs: each cert gets one column, max 3 columns visible
-  const nCols = Math.min(n, 3);           // max 3 cols
-  const cW    = nCols > 0 ? (100/nCols).toFixed(2)+'%' : '100%'; // width inside container
+  const cW    = nCols > 0 ? (100/nCols).toFixed(2)+'%' : '100%';
   const Z   = 'position:absolute;z-index:2;';
 
   // ── Process row ──────────────────────────────────────────────
@@ -1713,9 +1712,9 @@ function buildEmpCard(emp){
     return best>0 ? s.slice(0,best)+'<br>'+s.slice(best+1) : s;
   };
 
-  if(n===0){
+  if(sc.length===0){
     pRow = '<td style="width:100%;vertical-align:middle;padding:0 2px"><div style="color:#ccc;font-size:4pt">—</div></td>';
-  } else if(n===1){
+  } else if(sc.length===1){
     pRow = '<td style="width:100%;vertical-align:top;padding:0 2px;overflow:hidden;text-align:center">'
          + '<div style="font-size:4.5pt;font-weight:700;color:#111;line-height:1.35;text-align:center">'+wrapPnm(sc[0].pnm)+'</div>'
          + '</td>';
@@ -1727,9 +1726,9 @@ function buildEmpCard(emp){
 
   // ── Level row ────────────────────────────────────────────────
   let lRow;
-  if(n===0){
+  if(sc.length===0){
     lRow = '<td style="width:100%"></td>';
-  } else if(n===1){
+  } else if(sc.length===1){
     lRow = '<td style="width:100%;vertical-align:middle;padding:0 2px;text-align:center">'
          + '<div style="font-size:10pt;font-weight:900;color:#111;line-height:1;text-align:center">'+lvN(sc[0].lv)+'</div>'
          + '</td>';
@@ -1741,9 +1740,9 @@ function buildEmpCard(emp){
 
   // ── Expiry row ───────────────────────────────────────────────
   let eRow;
-  if(n===0){
+  if(sc.length===0){
     eRow = '<td style="width:100%"></td>';
-  } else if(n===1){
+  } else if(sc.length===1){
     const st0=cSt(sc[0].exp);
     const col0=st0==='Expired'?'#C8102E':st0==='Expiring Soon'?'#E67E22':'#111';
     eRow = '<td style="width:100%;vertical-align:middle;padding:0 2px;text-align:center">'
@@ -1762,7 +1761,7 @@ function buildEmpCard(emp){
   // ── Row container ────────────────────────────────────────────
   // Template: 3 cột data, mỗi cột 25% (đo pixel: 24.7%→49.7%→74.8%→99.8%)
   const colW = 25; // % per column (template measured: 3 cols × 25% = 75%)
-  const rowW = n===0 ? 75 : nCols * colW;
+  const rowW = sc.length===0 ? 75 : nCols * colW;
   const row = (top, h, cells, ovf) =>
     '<div style="'+Z+'top:'+top+'%;left:24.7%;width:'+rowW+'%;height:'+h+'%;'+(ovf||'overflow:hidden')+';box-sizing:border-box">'
     +'<table style="width:100%;height:100%;border-collapse:collapse;table-layout:fixed"><tr>'+cells+'</tr></table></div>';
@@ -1781,7 +1780,7 @@ function buildEmpCard(emp){
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
     // QR — overlapping bottom-left of photo (photo: top=21%, bottom=55%, left=12.5%)
-    +'<div style="'+Z+'top:46%;left:28.5%;width:7mm;height:7mm;z-index:3;background:rgba(255,255,255,0.9);border-radius:1.5px;overflow:hidden">'
+    +'<div style="'+Z+'top:48%;left:12.5%;width:7mm;height:7mm;z-index:3;background:rgba(255,255,255,0.9);border-radius:1.5px;overflow:hidden">'
     +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&qzone=1&data='
     +encodeURIComponent(window.location.origin+'/verify?emp='+emp.id)
     +'" style="width:100%;height:100%;display:block" title="Scan to verify"></div>'
@@ -2044,102 +2043,10 @@ function printCard(){
     <meta charset="UTF-8">
     <style>
       *{margin:0;padding:0;box-sizing:border-box}
-      body{background:#f2f2f2;display:flex;align-items:center;justify-content:center;min-height:100vh}
-      /* ═══ RESPONSIVE / MOBILE ══════════════════════════════════════════════════ */
-/* Mobile hamburger button */
-#menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:#444;font-size:20px;flex-shrink:0}
-
-@media (max-width:768px){
-  :root{--sidebar:240px}
-  body{overflow:hidden}
-
-  /* Sidebar slides in/out */
-  #sidebar{
-    position:fixed;top:0;left:0;height:100%;z-index:500;
-    transform:translateX(-100%);transition:transform .25s ease;
-    box-shadow:4px 0 24px rgba(0,0,0,.35);
-  }
-  #sidebar.open{transform:translateX(0)}
-
-  /* Overlay when sidebar open */
-  #sidebar-overlay{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:499;
-  }
-  #sidebar.open ~ #sidebar-overlay{display:block}
-
-  /* Main takes full width */
-  #main{width:100%;overflow:hidden}
-  #topbar{padding:0 12px;gap:6px;height:52px}
-  #topbar h2{font-size:17px}
-  #menu-toggle{display:flex;align-items:center}
-
-  /* Topbar buttons — hide labels on small screens */
-  .tbtn{padding:6px 10px;font-size:11px}
-  #content{padding:12px}
-
-  /* KPI grid: 2 cols on mobile */
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-
-  /* Dashboard 2-panel → stack */
-  #page-dashboard > div:last-child{grid-template-columns:1fr!important}
-
-  /* Tables: horizontal scroll */
-  .tw{overflow-x:auto}
-  table{min-width:500px}
-  #page-employees table,#page-certs table,#page-renewal table{min-width:640px}
-
-  /* Modals: full-width on mobile */
-  .md{width:96vw!important;max-width:96vw!important;margin:8px}
-  .fg{grid-template-columns:1fr!important}
-  .fg .s2{grid-column:span 1}
-
-  /* Card page: stack */
-  #card-tab-single > div,#card-tab-bulk > div{
-    grid-template-columns:1fr!important;
-  }
-  #card-tab-bulk > div > div:first-child{order:2}
-  #card-tab-bulk > div > div:last-child{order:1}
-
-  /* Settings max-width */
-  #page-settings > div,#page-import > div,#page-verify > div{
-    max-width:100%!important;
-  }
-  /* Topbar: hide some buttons */
-  #topbar .tbtn.green{display:none!important}
-}
-
-@media (max-width:480px){
-  .kpi-val{font-size:28px!important}
-  .kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}
-  #topbar h2{font-size:15px}
-}
-
-/* ═══ PUBLIC VERIFY MODE (QR scan — no auth UI) ═════════════════════════════ */
-body.verify-mode #sidebar,
-body.verify-mode #topbar,
-body.verify-mode #login-screen,
-body.verify-mode #menu-toggle,
-body.verify-mode #sidebar-overlay{display:none!important}
-
-body.verify-mode #main{display:block;height:auto;overflow:auto}
-body.verify-mode #content{
-  padding:0;height:auto;overflow:visible;
-  display:flex;align-items:flex-start;justify-content:center;
-  background:#f2f2f2;min-height:100vh;
-}
-body.verify-mode #page-verify{
-  display:block!important;
-  width:100%;max-width:540px;
-  padding:16px;
-  margin:0 auto;
-}
-body.verify-mode #page-verify .box{
-  box-shadow:0 4px 20px rgba(0,0,0,.12);
-}
-
-@media print{
+      html,body{width:54mm;height:90mm;overflow:hidden;background:#fff}
+      @media print{
         *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-        body{background:white;margin:0;padding:0;display:block}
+        html,body{width:54mm;height:90mm;margin:0;padding:0;overflow:hidden}
         @page{size:54mm 90mm;margin:0}
       }
     </style>
