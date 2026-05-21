@@ -11,19 +11,70 @@
 :root{--red:#C0392B;--red2:#96281B;--dark:#1a1a1a;--white:#fff;--green:#27AE60;--orange:#E67E22;--blue:#2980B9;--sidebar:224px;}
 body{font-family:'DM Sans',sans-serif;background:#f2f2f2;color:#111;display:flex;height:100vh;overflow:hidden}
 /* SIDEBAR */
-#sidebar{width:var(--sidebar);background:var(--dark);display:flex;flex-direction:column;flex-shrink:0}
-.sb-logo{padding:12px 16px 10px;border-bottom:1px solid #2e2e2e}
-.sb-logo img{height:auto;display:block}
-.sb-logo h1{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#fff;letter-spacing:1px;line-height:1.2}
-.sb-logo span{font-size:9px;color:#666;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:1px}
-.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
-.nav-lnk{display:flex;align-items:center;gap:9px;padding:9px 16px;color:#999;font-size:12.5px;font-weight:500;cursor:pointer;border-left:3px solid transparent;transition:.13s}
-.nav-lnk:hover{color:#fff;background:#262626}
-.nav-lnk.active{color:#fff;background:#242424;border-left-color:var(--red)}
-.nav-lnk svg{width:15px;height:15px;flex-shrink:0}
-.sb-div{height:1px;background:#2a2a2a;margin:6px 16px}
-.sb-sec{padding:9px 16px 3px;font-size:9px;color:#4a4a4a;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
-.sb-foot{padding:12px 16px;border-top:1px solid #242424;font-size:11px;color:#4a4a4a;line-height:1.5}
+#sidebar{width:var(--sidebar);background:#161616;display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid #222}
+
+/* ── Logo bar ── */
+.sb-logo{
+  padding:14px 16px 13px;
+  border-bottom:1px solid #222;
+  display:flex;align-items:center;gap:10px;
+}
+.sb-logo-img{
+  background:#fff;border-radius:6px;
+  padding:4px 6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.sb-logo-img img{width:28px;height:auto;display:block}
+.sb-logo-text{display:flex;flex-direction:column;gap:1px}
+.sb-logo-text strong{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:15px;letter-spacing:1.5px;
+  color:#fff;line-height:1;
+}
+.sb-logo-text span{
+  font-size:9px;color:#555;
+  letter-spacing:1.5px;text-transform:uppercase;
+  line-height:1.3;
+}
+
+/* ── Nav ── */
+.sb-nav{
+  flex:1;padding:8px 0;overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#2e2e2e transparent;
+}
+.sb-nav::-webkit-scrollbar{width:4px}
+.sb-nav::-webkit-scrollbar-track{background:transparent}
+.sb-nav::-webkit-scrollbar-thumb{background:#2e2e2e;border-radius:4px}
+.sb-nav::-webkit-scrollbar-thumb:hover{background:#3e3e3e}
+
+.nav-lnk{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 16px;margin:1px 8px;
+  color:#666;font-size:12.5px;font-weight:500;
+  cursor:pointer;border-radius:7px;
+  border:none;transition:all .15s;
+  position:relative;
+}
+.nav-lnk:hover{color:#ddd;background:#222}
+.nav-lnk.active{
+  color:#fff;background:#1e1e1e;
+  box-shadow:inset 3px 0 0 var(--red);
+}
+.nav-lnk.active svg{color:var(--red)}
+.nav-lnk svg{width:15px;height:15px;flex-shrink:0;transition:.15s}
+
+.sb-div{height:1px;background:#1e1e1e;margin:6px 16px}
+.sb-sec{
+  padding:12px 16px 4px;
+  font-size:9.5px;color:#3a3a3a;
+  text-transform:uppercase;letter-spacing:2px;font-weight:700;
+}
+.sb-foot{
+  padding:12px 16px;border-top:1px solid #1e1e1e;
+  font-size:11px;color:#3a3a3a;line-height:1.5;
+  display:flex;align-items:center;gap:6px;
+}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
 .dot.ok{background:var(--green)}.dot.warn{background:var(--orange)}.dot.err{background:var(--red)}
 /* MAIN */
@@ -434,8 +485,13 @@ body.verify-mode #page-verify .box{
 </div>
 <nav id="sidebar">
   <div class="sb-logo">
-    <div style="background:#fff;border-radius:5px;padding:4px 7px;display:inline-block;margin-bottom:5px"><img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group" style="width:28px;height:auto;display:block"></div>
-    <span>OpCertMS — Cert Management</span>
+    <div class="sb-logo-img">
+      <img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group">
+    </div>
+    <div class="sb-logo-text">
+      <strong>OpCertMS</strong>
+      <span>TTI Group · AES</span>
+    </div>
   </div>
   <div class="sb-nav">
     <a class="nav-lnk active" data-p="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
@@ -3184,74 +3240,108 @@ async function initSync(){
   }
 })();
 
-openIDB().then(async()=>{
+openIDB().then(()=>{
   loadUsers();
   loadSyncCfg();
-  // Restore session via token verify
+  loadLocal();
+
+  // ── Restore session from localStorage immediately (synchronous) ──────────
+  // This runs BEFORE any async verify, so UI is shown instantly on reload.
+  let sessionRestored = false;
   try{
-    const raw=localStorage.getItem('opcertms_sess');
+    const raw = localStorage.getItem('opcertms_sess');
     if(raw){
-      const saved=JSON.parse(raw);
-      if(saved.token && saved.user){
-        // Restore UI immediately from saved data (no flicker on refresh)
-        _authToken=saved.token;
-        currentUser=saved.user;
+      const saved = JSON.parse(raw);
+      // Accept session if we have user info (token optional for local mode)
+      if(saved.user && saved.user.role){
+        _authToken  = saved.token || null;
+        currentUser = saved.user;
         applyRole();
         document.getElementById('login-screen').classList.add('hidden');
-        // Verify token in background — only force logout on explicit 401/403
-        try{
-          const r=await fetch('/api/auth',{method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({action:'verify',token:saved.token})});
-          if(r.ok){
-            const u=await r.json();
-            currentUser={id:u.id,username:u.email,role:u.role,label:u.full_name||u.email};
-            localStorage.setItem('opcertms_sess',JSON.stringify({token:_authToken,user:currentUser}));
-            applyRole();
-          }else if(r.status===401||r.status===403){
-            // Token truly invalid — force logout
-            _authToken=null; currentUser=null;
-            localStorage.removeItem('opcertms_sess');
-            document.getElementById('login-screen').classList.remove('hidden');
-          }
-          // Any other error (5xx, network timeout) — keep user logged in
-        }catch(netErr){
-          // Network offline — keep saved session, do not logout
-          console.warn('Token verify offline, keeping session:', netErr);
-        }
+        document.getElementById('mab').style.display = '';
+        sessionRestored = true;
       }
     }
-  }catch(e){}
-  // Load local data first (fast)
-  loadLocal();
-  await loadLocalPhotos();
-  rDash();
-  document.getElementById('mab').style.display='';
-  updSbf();
-  if(!currentUser){
-    // No saved session at all — show login
+  }catch(e){ console.warn('Session restore error:', e); }
+
+  if(!sessionRestored){
+    // No valid session — show login immediately
     const isPublicVerify = window.location.pathname==='/verify'
       || window.location.search.includes('id=')
       || window.location.search.includes('emp=');
-    if(isPublicVerify){ enterVerifyMode(); }
-    else {
-      const ls=document.getElementById('login-screen');
-      if(ls) ls.classList.remove('hidden');
-      setTimeout(()=>{ const f=document.getElementById('l-user');if(f)f.focus(); },100);
+    if(isPublicVerify){
+      enterVerifyMode();
+    } else {
+      document.getElementById('login-screen').classList.remove('hidden');
+      setTimeout(()=>{ const f=document.getElementById('l-user'); if(f)f.focus(); },100);
     }
-  } else {
-    // Try to pull fresh data from cloud
-    initSync();
   }
+
+  // ── Load data and render ─────────────────────────────────────────────────
+  loadLocalPhotos().then(()=>{ rDash(); updSbf(); });
+  rDash();
+  updSbf();
+  document.getElementById('mab').style.display = '';
+
+  // ── Verify token in background (NEVER blocks or logs out on network error) 
+  if(sessionRestored && _authToken){
+    (async()=>{
+      try{
+        const ctrl = new AbortController();
+        const tid  = setTimeout(()=>ctrl.abort(), 5000); // 5s timeout
+        const r = await fetch('/api/auth',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'verify', token:_authToken}),
+          signal: ctrl.signal
+        });
+        clearTimeout(tid);
+        if(r.ok){
+          const u = await r.json();
+          if(u && u.role){
+            currentUser = {id:u.id, username:u.email, role:u.role, label:u.full_name||u.email};
+            localStorage.setItem('opcertms_sess', JSON.stringify({token:_authToken, user:currentUser}));
+            applyRole();
+          }
+        } else if(r.status===401 || r.status===403){
+          // Only logout on EXPLICIT invalid token response
+          _authToken=null; currentUser=null;
+          localStorage.removeItem('opcertms_sess');
+          document.getElementById('login-screen').classList.remove('hidden');
+          document.getElementById('mab').style.display='none';
+        }
+        // 404/500/503/etc → backend not deployed locally, keep session as-is
+      }catch(e){
+        // Network offline, timeout, CORS → keep session, do NOT logout
+        console.info('Token verify skipped (network/timeout):', e.message);
+      }
+    })();
+  }
+
+  // ── Start cloud sync if logged in ────────────────────────────────────────
+  if(sessionRestored){ initSync(); }
+
 }).catch(err=>{
   console.warn('IDB error:',err);
-  loadUsers();loadSyncCfg();loadLocal();
-  rDash();document.getElementById('mab').style.display='';updSbf();
-  if(!currentUser){
-    const ls=document.getElementById('login-screen');
-    if(ls) ls.classList.remove('hidden');
-    setTimeout(()=>{ const f=document.getElementById('l-user');if(f)f.focus(); },100);
-  }
+  loadUsers(); loadSyncCfg(); loadLocal();
+  rDash(); updSbf();
+  document.getElementById('mab').style.display='';
+  // Try session restore even after IDB error
+  try{
+    const raw = localStorage.getItem('opcertms_sess');
+    if(raw){
+      const saved = JSON.parse(raw);
+      if(saved.user && saved.user.role){
+        _authToken=saved.token||null; currentUser=saved.user;
+        applyRole();
+        document.getElementById('login-screen').classList.add('hidden');
+        return;
+      }
+    }
+  }catch(e){}
+  const ls=document.getElementById('login-screen');
+  if(ls) ls.classList.remove('hidden');
+  setTimeout(()=>{ const f=document.getElementById('l-user'); if(f)f.focus(); },100);
 });
 
 // ─── Mobile Sidebar ──────────────────────────────────────────────────────────
