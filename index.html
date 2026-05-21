@@ -1781,7 +1781,7 @@ function buildEmpCard(emp){
     +row(75.25, 6.99, lRow)
     +row(83.74, 5.46, eRow)
     // QR — overlapping bottom-left of photo (photo: top=21%, bottom=55%, left=12.5%)
-    +'<div style="'+Z+'top:48%;left:28.5%;width:5mm;height:5mm;z-index:3;background:rgba(255,255,255,0.9);border-radius:1.5px;overflow:hidden">'
+    +'<div style="'+Z+'top:48%;left:28.5%;width:7mm;height:7mm;z-index:3;background:rgba(255,255,255,0.9);border-radius:1.5px;overflow:hidden">'
     +'<img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&qzone=1&data='
     +encodeURIComponent(window.location.origin+'/verify?emp='+emp.id)
     +'" style="width:100%;height:100%;display:block" title="Scan to verify"></div>'
