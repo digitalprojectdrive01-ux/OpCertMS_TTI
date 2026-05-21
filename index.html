@@ -159,15 +159,16 @@ input:focus,select:focus{border-color:var(--red)}
 }
 #login-screen.hidden{display:none}
 .login-box{
-  background:#fff;border-radius:14px;width:400px;max-width:94vw;
+  background:#fff;border-radius:14px;width:400px;max-width:92vw;
   overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.5);
+  max-height:96vh;overflow-y:auto;
 }
 .login-header{
-  background:var(--red);padding:28px 32px 24px;text-align:center;
+  background:var(--red);padding:24px 24px 20px;text-align:center;
 }
 .login-header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;letter-spacing:2px;margin-bottom:4px}
 .login-header p{font-size:11.5px;color:rgba(255,255,255,.65);letter-spacing:1px;text-transform:uppercase}
-.login-body{padding:28px 32px 32px;display:flex;flex-direction:column;gap:16px}
+.login-body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:14px}
 .login-field{display:flex;flex-direction:column;gap:6px}
 .login-field label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#666}
 .login-field input{
@@ -190,8 +191,8 @@ input:focus,select:focus{border-color:var(--red)}
 }
 .login-err.show{display:block}
 .login-footer{
-  border-top:1px solid #f0f0f0;padding:14px 32px;
-  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid #f0f0f0;padding:12px 20px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
   background:#fafafa;
 }
 .ms-login-btn{
@@ -433,7 +434,7 @@ body.verify-mode #page-verify .box{
 </div>
 <nav id="sidebar">
   <div class="sb-logo">
-    <div style="background:#fff;border-radius:7px;padding:5px 9px;display:inline-block;margin-bottom:6px"><img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group" style="width:56px;height:auto;display:block"></div>
+    <div style="background:#fff;border-radius:5px;padding:4px 7px;display:inline-block;margin-bottom:5px"><img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group" style="width:28px;height:auto;display:block"></div>
     <span>OpCertMS — Cert Management</span>
   </div>
   <div class="sb-nav">
