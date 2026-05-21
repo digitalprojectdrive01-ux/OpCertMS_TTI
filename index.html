@@ -28,8 +28,22 @@ body{font-family:'DM Sans',sans-serif;background:#f2f2f2;color:#111;display:flex
 .dot.ok{background:var(--green)}.dot.warn{background:var(--orange)}.dot.err{background:var(--red)}
 /* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#topbar{height:58px;background:#fff;border-bottom:1px solid #e4e4e4;display:flex;align-items:center;padding:0 22px;gap:9px;flex-shrink:0}
-#topbar h2{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;color:var(--dark);flex:1}
+#topbar{
+  height:58px;
+  background:#fff;
+  border-bottom:1px solid #e4e4e4;
+  display:flex;align-items:center;
+  padding:0 20px;gap:10px;flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+#topbar h2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;letter-spacing:1.5px;
+  color:var(--dark);
+  padding-left:10px;
+  border-left:3px solid var(--red);
+  line-height:1;
+}
 .tbtn{border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.13s;white-space:nowrap}
 .tbtn.red{background:var(--red);color:#fff}.tbtn.red:hover{background:var(--red2)}
 .tbtn.green{background:#1D6F42;color:#fff}.tbtn.green:hover{background:#155233}
@@ -213,23 +227,29 @@ input:focus,select:focus{border-color:var(--red)}
 .role-badge.trainer{background:#e8fdf0;color:#155724}
 /* Top-right user info bar */
 #user-bar{
-  display:flex;align-items:center;gap:10px;padding:0 4px;
+  display:flex;align-items:center;gap:8px;
 }
-#user-bar .uname{font-size:12.5px;font-weight:600;color:#444}
-#user-bar .urole{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
+#user-bar .uname{font-size:12.5px;font-weight:600;color:#2c2c2c}
+#user-bar .urole{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700}
 #user-bar .urole.admin{background:#fde8e8;color:var(--red)}
 #user-bar .urole.viewer{background:#e8f4fd;color:#1565c0}
 #user-bar .urole.trainer{background:#e8fdf0;color:#155724}
 #user-bar .logout-btn{
-  background:none;border:1px solid #ddd;border-radius:5px;
-  padding:4px 10px;font-size:12px;cursor:pointer;color:#888;
-  font-family:inherit;transition:.15s;
+  background:none;border:1px solid #e0e0e0;border-radius:6px;
+  padding:6px 11px;font-size:12px;cursor:pointer;color:#888;
+  font-family:inherit;transition:.15s;display:flex;align-items:center;gap:5px;
 }
-#user-bar .logout-btn:hover{border-color:var(--red);color:var(--red)}
+#user-bar .logout-btn:hover{border-color:var(--red);color:var(--red);background:#fdf6f5}
+#menu-toggle{
+  display:none;background:none;border:1px solid #e4e4e4;border-radius:6px;
+  width:36px;height:36px;cursor:pointer;font-size:18px;align-items:center;justify-content:center;
+  color:#555;transition:.13s;flex-shrink:0;
+}
+#menu-toggle:hover{border-color:var(--red);color:var(--red)}
 @media(max-width:768px){
+  #menu-toggle{display:flex}
   .hide-mobile{display:none!important}
   #user-bar .uname{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #user-bar .urole{display:none}
 }
 /* ── Role-based visibility ── */
 /* VIEWER: read-only */
@@ -252,8 +272,6 @@ body.role-trainer .nav-lnk[data-p="settings"]{display:none!important}
 body.role-viewer #page-import{display:none!important}
 body.role-trainer #page-import{display:none!important}
 /* ═══ RESPONSIVE / MOBILE ══════════════════════════════════════════════════ */
-/* Mobile hamburger button */
-#menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:#444;font-size:20px;flex-shrink:0}
 
 @media (max-width:768px){
   :root{--sidebar:240px}
@@ -382,8 +400,8 @@ body.verify-mode #page-verify .box{
 <div id="login-screen">
   <div class="login-box">
     <div class="login-header">
-      <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Techtronic_Industries_logo.png" alt="TTI Group" style="max-width:180px;height:auto;display:block;margin:0 auto 8px;filter:brightness(0) invert(1)">
-      <h1 style="font-size:13px;letter-spacing:1px;margin-bottom:2px">OpCertMS</h1>
+      <img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group" style="max-width:160px;height:auto;display:block;margin:0 auto 12px;filter:brightness(0) invert(1)">
+      <h1 style="font-size:13px;letter-spacing:2px;margin-bottom:3px;font-weight:700;color:#fff;text-transform:uppercase">OpCertMS</h1>
       <p>Operation Certificate Management</p>
     </div>
     <div class="login-body">
@@ -414,7 +432,10 @@ body.verify-mode #page-verify .box{
   </div>
 </div>
 <nav id="sidebar">
-  <div class="sb-logo"><img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Techtronic_Industries_logo.png" alt="TTI" style="width:120px;height:auto;filter:brightness(0) invert(1);margin-bottom:4px"><span>OpCertMS — Cert Management</span></div>
+  <div class="sb-logo">
+    <img src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png" alt="TTI Group" style="width:110px;height:auto;filter:brightness(0) invert(1);margin-bottom:5px">
+    <span>OpCertMS — Cert Management</span>
+  </div>
   <div class="sb-nav">
     <a class="nav-lnk active" data-p="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a>
     <div class="sb-sec">Management</div>
@@ -438,18 +459,36 @@ body.verify-mode #page-verify .box{
 
 <div id="main">
   <div id="topbar">
-    <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+    <button id="menu-toggle" onclick="toggleSidebar()" aria-label="Menu" style="display:none">☰</button>
+    <!-- Page title -->
     <h2 id="ptitle">DASHBOARD</h2>
+
+    <!-- Spacer -->
+    <div style="flex:1"></div>
+
+    <!-- Sync status indicator -->
+    <div id="sync-indicator" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:#f8f8f8;border:1px solid #ebebeb">
+      <div id="sync-status-dot" style="width:7px;height:7px;border-radius:50%;background:#aaa;flex-shrink:0;transition:background .3s"></div>
+      <span id="sync-status-label" style="font-size:11px;color:#888;white-space:nowrap;font-weight:500" class="hide-mobile">Offline</span>
+    </div>
+
+    <!-- Divider -->
+    <div style="width:1px;height:22px;background:#e8e8e8"></div>
+
+    <!-- User info + logout -->
     <div id="user-bar">
-    <span class="uname" id="ub-name">—</span>
-    <span class="urole" id="ub-role">—</span>
-    <button class="logout-btn" onclick="doLogout()">Logout</button>
-  </div>
-  <div style="width:1px;height:24px;background:#eee"></div>
-  <button class="tbtn green" onclick="nav('import')">📊 Import Excel</button>
-    
-    <div id="sync-status-dot" style="width:9px;height:9px;border-radius:50%;background:#aaa;flex-shrink:0"></div>
-    <span id="sync-status-label" style="font-size:11.5px;color:#888;white-space:nowrap" class="hide-mobile">○ Offline</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.3" class="hide-mobile">
+        <span class="uname" id="ub-name" style="font-size:12.5px;font-weight:600;color:#2c2c2c">—</span>
+        <span id="ub-role" style="font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700;margin-top:1px"></span>
+      </div>
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c0392b,#e74c3c);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0" id="ub-avatar">?</div>
+      <button class="logout-btn" onclick="doLogout()" title="Logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="hide-mobile">Logout</span>
+      </button>
+    </div>
+
+    <!-- Add New button -->
     <button class="tbtn red" id="mab" onclick="mAct()">+ Add New</button>
   </div>
   <div id="content">
@@ -2194,10 +2233,30 @@ function applyRole(){
   const r=currentUser.role;
   document.body.className=document.body.className.replace(/role-\S+/g,'').trim();
   document.body.classList.add('role-'+r);
-  document.getElementById('ub-name').textContent=currentUser.label||currentUser.username;
+
+  // Name display
+  const displayName=currentUser.label||currentUser.username||'—';
+  document.getElementById('ub-name').textContent=displayName;
+
+  // Role badge
   const re=document.getElementById('ub-role');
-  re.textContent=r==='admin'?'👑 Admin':r==='trainer'?'✏ Trainer':'👁 Viewer';
-  re.className='urole '+r;
+  if(re){
+    const roleMap={admin:{text:'👑 Admin',cls:'admin'},trainer:{text:'✏ Trainer',cls:'trainer'},viewer:{text:'👁 Viewer',cls:'viewer'}};
+    const rm=roleMap[r]||{text:r,cls:''};
+    re.textContent=rm.text;
+    re.className='urole '+rm.cls;
+  }
+
+  // Avatar initials
+  const av=document.getElementById('ub-avatar');
+  if(av){
+    const parts=(displayName||'?').trim().split(/\s+/);
+    const initials=parts.length>=2?(parts[0][0]+parts[parts.length-1][0]).toUpperCase():(displayName[0]||'?').toUpperCase();
+    av.textContent=initials;
+    const colors={admin:'linear-gradient(135deg,#c0392b,#e74c3c)',trainer:'linear-gradient(135deg,#1a5276,#2980b9)',viewer:'linear-gradient(135deg,#1d6f42,#27ae60)'};
+    av.style.background=colors[r]||colors.viewer;
+  }
+
   const importLink=document.querySelector('.nav-lnk[data-p="import"]');
   const settingsLink=document.querySelector('.nav-lnk[data-p="settings"]');
   if(importLink) importLink.style.display=r==='admin'?'':'none';
@@ -3169,7 +3228,16 @@ openIDB().then(async()=>{
   document.getElementById('mab').style.display='';
   updSbf();
   if(!currentUser){
-    setTimeout(()=>document.getElementById('l-user').focus(),100);
+    // No saved session at all — show login
+    const isPublicVerify = window.location.pathname==='/verify'
+      || window.location.search.includes('id=')
+      || window.location.search.includes('emp=');
+    if(isPublicVerify){ enterVerifyMode(); }
+    else {
+      const ls=document.getElementById('login-screen');
+      if(ls) ls.classList.remove('hidden');
+      setTimeout(()=>{ const f=document.getElementById('l-user');if(f)f.focus(); },100);
+    }
   } else {
     // Try to pull fresh data from cloud
     initSync();
@@ -3178,7 +3246,11 @@ openIDB().then(async()=>{
   console.warn('IDB error:',err);
   loadUsers();loadSyncCfg();loadLocal();
   rDash();document.getElementById('mab').style.display='';updSbf();
-  setTimeout(()=>{ if(!currentUser){ const f=document.getElementById('l-user');if(f)f.focus(); }},100);
+  if(!currentUser){
+    const ls=document.getElementById('login-screen');
+    if(ls) ls.classList.remove('hidden');
+    setTimeout(()=>{ const f=document.getElementById('l-user');if(f)f.focus(); },100);
+  }
 });
 
 // ─── Mobile Sidebar ──────────────────────────────────────────────────────────
@@ -3212,22 +3284,8 @@ function enterVerifyMode(){
   checkVerifyFromURL();
 }
 
-// Safety net
-setTimeout(()=>{
-  if(!currentUser){
-    // Allow public verify page without login (QR scan)
-    const isPublicVerify = window.location.pathname==='/verify'
-      || window.location.search.includes('id=')
-      || window.location.search.includes('emp=');
-    if(isPublicVerify){
-      enterVerifyMode();
-      return;
-    }
-    const ls=document.getElementById('login-screen');
-    if(ls)ls.classList.remove('hidden');
-    const f=document.getElementById('l-user');if(f)f.focus();
-  }
-},2000);
+// Safety net — only show login if IDB init somehow failed AND no session found
+// We do NOT use a timer here to avoid race conditions with async token verify on reload
 </script>
 </body>
 </html>
