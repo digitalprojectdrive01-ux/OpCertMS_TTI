@@ -1716,20 +1716,32 @@ function doImport(){
   const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false,dateNF:'yyyy-mm-dd'});
   if(!mp.id||!mp.name){alert('Cần chọn cột Mã employees và Full Name!');return;}
   let add=0,upd=0,skip=0;
+  const imported=[];
   rows.forEach(row=>{
     const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
     if(!id||!name){skip++;return;}
     const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',dob:mp.dob?parseXlDate(row[mp.dob]):'',join:mp.join?parseXlDate(row[mp.join]):'',phone:mp.phone?String(row[mp.phone]||''):'',status:mp.status?String(row[mp.status]||'Active'):'Active',email:mp.email?String(row[mp.email]||''):'',photo:''};
     const i=DB.emps.findIndex(e=>e.id===id);
     if(i>=0){const p=DB.emps[i].photo;DB.emps[i]={...em,photo:p};upd++;}else{DB.emps.push(em);add++;}
+    imported.push(em);
   });
+  saveLocal();updSbf();rDash();
   const res=document.getElementById('imp-res');res.style.display='block';
   res.querySelector('.box-body').innerHTML=`<div class="ib s">
     <strong>✓ Import Complete!</strong><br>
-    Added: <strong>${add}</strong> employees &nbsp;|&nbsp; Updated: <strong>${upd}</strong> &nbsp;|&nbsp; Skipped: <strong>${skip}</strong>
+    Added: <strong>${add}</strong> | Updated: <strong>${upd}</strong> | Skipped: <strong>${skip}</strong><br>
+    <span id="legacy-sync-status" style="font-size:11.5px;color:#888">⏳ Syncing to cloud...</span>
     ${DB.sp.url?`<br><br><button class="btn bsp" style="margin-top:7px" onclick="loadAllPics();nav('settings')">🖼 Load Photos from SharePoint</button>`:'<br><br><button class="btn bs" onclick="nav(\'settings\')" style="margin-top:7px">⚙ Configure SharePoint to load photos</button>'}
   </div>`;
-  updSbf();rDash();saveDB();
+  // Push to Supabase in background
+  (async()=>{
+    let s=0,f=0;
+    for(const e of imported){try{await sbUpsertEmp(e);s++;}catch(x){f++;}}
+    const el=document.getElementById('legacy-sync-status');
+    if(el) el.innerHTML=s>0
+      ?`<span style="color:#27AE60">☁ Synced ${s} records to cloud</span>`+(f>0?` | <span style="color:#E67E22">${f} failed</span>`:'')
+      :`<span style="color:#888">📴 Saved locally. Go to Settings → Push All Data to sync.</span>`;
+  })();
 }
 function dlTpl(){ downloadImportTemplate(null,'employees'); }
 
@@ -3593,10 +3605,20 @@ function doImportInline(){
 
   let add=0,upd=0,skip=0,errs=[];
   const resultEl=document.getElementById('im-result');
+  const btnDo=document.getElementById('im-btn-do');
+
+  function showSyncResult(synced,failed){
+    const el=document.getElementById('im-sync-status');
+    if(!el)return;
+    el.innerHTML=synced>0
+      ?`<span style="color:#27AE60">☁ Synced ${synced} lên cloud</span>`+(failed>0?` | <span style="color:#E67E22">${failed} failed</span>`:'')
+      :`<span style="color:#888">📴 Offline — data saved locally. Use "Push All Data" to sync later.</span>`;
+  }
 
   if(imType==='employees'){
     if(!mp.id||!mp.name){alert('Cần chọn cột Mã Employees và Full Name!');return;}
-    rows.forEach((row,i)=>{
+    const imported=[];
+    rows.forEach(row=>{
       const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
       if(!id||!name){skip++;return;}
       const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',
@@ -3605,13 +3627,18 @@ function doImportInline(){
         email:mp.email?String(row[mp.email]||''):'',photo:''};
       const idx=DB.emps.findIndex(e=>e.id===id);
       if(idx>=0){const ph=DB.emps[idx].photo;DB.emps[idx]={...em,photo:ph};upd++;}else{DB.emps.push(em);add++;}
+      imported.push(em);
     });
-    rEmp();rDash();saveDB();
+    saveLocal();rEmp();rDash();
+    if(btnDo)btnDo.style.display='none';
     resultEl.style.display='';
-    resultEl.innerHTML=`<strong>✓ Import Employees xong!</strong><br>Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+    resultEl.innerHTML=`<strong>✓ Import Employees xong!</strong> Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong><br><span id="im-sync-status" style="font-size:11.5px;color:#888">⏳ Syncing...</span>`;
+    showToast(`✓ Imported ${add+upd} employees`,'#27AE60',2000);
+    (async()=>{let s=0,f=0;for(const e of imported){try{await sbUpsertEmp(e);s++;}catch(x){f++;}}showSyncResult(s,f);})();
 
-  } else if(imType==='processes'){
+  }else if(imType==='processes'){
     if(!mp.id||!mp.name){alert('Cần chọn cột Process ID và Process Name!');return;}
+    const imported=[];
     rows.forEach(row=>{
       const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
       if(!id||!name){skip++;return;}
@@ -3621,13 +3648,18 @@ function doImportInline(){
         status:mp.status?String(row[mp.status]||'Active'):'Active'};
       const idx=DB.procs.findIndex(p=>p.id===id);
       if(idx>=0){DB.procs[idx]=obj;upd++;}else{DB.procs.push(obj);add++;}
+      imported.push(obj);
     });
-    rProc();saveDB();
+    saveLocal();rProc();
+    if(btnDo)btnDo.style.display='none';
     resultEl.style.display='';
-    resultEl.innerHTML=`<strong>✓ Import Processes xong!</strong><br>Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+    resultEl.innerHTML=`<strong>✓ Import Processes xong!</strong> Thêm: <strong>${add}</strong> | Cập nhật: <strong>${upd}</strong> | Bỏ qua: <strong>${skip}</strong><br><span id="im-sync-status" style="font-size:11.5px;color:#888">⏳ Syncing...</span>`;
+    showToast(`✓ Imported ${add+upd} processes`,'#27AE60',2000);
+    (async()=>{let s=0,f=0;for(const p of imported){try{await sbUpsertProc(p);s++;}catch(x){f++;}}showSyncResult(s,f);})();
 
-  } else if(imType==='certs'){
+  }else if(imType==='certs'){
     if(!mp.eid||!mp.pid){alert('Cần chọn cột Employee ID và Process ID!');return;}
+    const imported=[];
     rows.forEach(row=>{
       const eid=String(row[mp.eid]||'').trim(),pid=String(row[mp.pid]||'').trim();
       if(!eid||!pid){skip++;return;}
@@ -3635,20 +3667,20 @@ function doImportInline(){
       const pr=DB.procs.find(p=>p.id===pid);
       if(!em){errs.push(`EMP không tìm thấy: ${eid}`);skip++;return;}
       if(!pr){errs.push(`Process không tìm thấy: ${pid}`);skip++;return;}
-      const rawLv=mp.lv?String(row[mp.lv]||'').trim():'';
-      const lv=rawLv||'Level 1';
-      const issRaw=mp.iss?row[mp.iss]:'';
-      const issDate=parseXlDate(issRaw)||today();
+      const lv=mp.lv?String(row[mp.lv]||'').trim()||'Level 1':'Level 1';
+      const issDate=parseXlDate(mp.iss?row[mp.iss]:'')||today();
       const c={id:nCId(),eid,enm:em.name,pid,pnm:pr.name,lv,iss:issDate,exp:aM(issDate,pr.vl),by:'Import'};
-      DB.certs.push(c);add++;
+      DB.certs.push(c);add++;imported.push(c);
     });
-    rCert();rDash();saveDB();
-    let msg=`<strong>✓ Import Certificates xong!</strong><br>Thêm: <strong>${add}</strong> | Bỏ qua: <strong>${skip}</strong>`;
-    if(errs.length)msg+=`<br><small style="color:var(--red)">${errs.slice(0,5).join(', ')}${errs.length>5?`... +${errs.length-5} lỗi`:''}</small>`;
-    resultEl.style.display='';
-    resultEl.innerHTML=msg;
+    saveLocal();rCert();rDash();
+    if(btnDo)btnDo.style.display='none';
+    let msg=`<strong>✓ Import Certificates xong!</strong> Thêm: <strong>${add}</strong> | Bỏ qua: <strong>${skip}</strong>`;
+    if(errs.length)msg+=`<br><small style="color:var(--red)">${errs.slice(0,5).join(' · ')}${errs.length>5?` +${errs.length-5} more`:''}</small>`;
+    msg+=`<br><span id="im-sync-status" style="font-size:11.5px;color:#888">⏳ Syncing...</span>`;
+    resultEl.style.display='';resultEl.innerHTML=msg;
+    showToast(`✓ Imported ${add} certificates`,'#27AE60',2000);
+    (async()=>{let s=0,f=0;for(const c of imported){try{await sbUpsertCert(c);s++;}catch(x){f++;}}showSyncResult(s,f);})();
   }
-  document.getElementById('im-btn-do').style.display='none';
 }
 
 // ─── User management ─────────────────────────────────────────────────────────
