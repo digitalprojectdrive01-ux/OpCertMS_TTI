@@ -1369,7 +1369,51 @@ const today=()=>new Date().toISOString().split('T')[0];
 function cSt(e){const d=Math.round((new Date(e)-new Date())/86400000);return d<0?'Expired':d<=30?'Expiring Soon':'Valid';}
 function dL(e){return Math.round((new Date(e)-new Date())/86400000);}
 function aM(dt,m){const d=new Date(dt);d.setMonth(d.getMonth()+m);return d.toISOString().split('T')[0];}
-function fD(s){if(!s)return'—';return new Date(s).toLocaleDateString('vi-VN');}
+function fD(s){
+  if(!s) return '—';
+  // If it's a raw Excel serial number, convert first
+  const n=Number(s);
+  if(!isNaN(n) && n>1000 && n<100000 && String(s).indexOf('-')<0 && String(s).indexOf('/')<0){
+    const d=new Date(Math.round((n-25569)*86400000));
+    if(!isNaN(d.getTime())) return d.toLocaleDateString('vi-VN');
+  }
+  const d=new Date(s);
+  return isNaN(d.getTime())?String(s):d.toLocaleDateString('vi-VN');
+}
+
+// Convert any date value from Excel → ISO YYYY-MM-DD string
+// Handles: Excel serial number, JS Date object, DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD, DD-MM-YYYY
+function parseXlDate(v){
+  if(!v && v!==0) return '';
+  // Already a JS Date (XLSX raw:true)
+  if(v instanceof Date) return v.toISOString().split('T')[0];
+  // Excel serial number (integer or float, typical range 1 = 1900-01-01, 45000 ≈ 2023)
+  const n=Number(v);
+  if(!isNaN(n) && n>1000 && n<100000){
+    // Excel epoch: Jan 0 1900 (with Lotus 1-2-3 bug: serial 60 = 29-Feb-1900 which didn't exist)
+    const d=new Date(Math.round((n - 25569) * 86400000)); // 25569 = days from 1900-01-01 to 1970-01-01
+    if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+  }
+  const s=String(v).trim();
+  if(!s) return '';
+  // Already ISO YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY or DD-MM-YYYY
+  const dmy=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(dmy){
+    const [,d,m,y]=dmy;
+    // If month > 12 swap (it's actually MM/DD)
+    if(parseInt(m)>12) return `${y}-${d.padStart(2,'0')}-${m.padStart(2,'0')}`;
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+  // YYYY/MM/DD
+  const ymd=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if(ymd){const[,y,m,d]=ymd;return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;}
+  // Fallback: let JS try
+  const fallback=new Date(s);
+  if(!isNaN(fallback.getTime())) return fallback.toISOString().split('T')[0];
+  return '';
+}
 function sBadge(s){
   const m={Valid:'bv','Expiring Soon':'be',Expired:'bx',Active:'bv',Inactive:'bx','On Leave':'be'};
   const l={Valid:'Validity','Expiring Soon':'Expiring Soon',Expired:'Expiry',Active:'Active',Inactive:'Inactive','On Leave':'On Leave'};
@@ -1669,14 +1713,13 @@ function buildMap(){
 function doImport(){
   if(!xWB)return;
   const ws=xWB.Sheets[document.getElementById('shsel').value];
-  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-  const mp={};FDEFS.forEach(f=>{mp[f.k]=document.getElementById('mp-'+f.k).value;});
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false,dateNF:'yyyy-mm-dd'});
   if(!mp.id||!mp.name){alert('Cần chọn cột Mã employees và Full Name!');return;}
   let add=0,upd=0,skip=0;
   rows.forEach(row=>{
     const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
     if(!id||!name){skip++;return;}
-    const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',dob:mp.dob?String(row[mp.dob]||''):'',join:mp.join?String(row[mp.join]||''):'',phone:mp.phone?String(row[mp.phone]||''):'',status:mp.status?String(row[mp.status]||'Active'):'Active',email:mp.email?String(row[mp.email]||''):'',photo:''};
+    const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',dob:mp.dob?parseXlDate(row[mp.dob]):'',join:mp.join?parseXlDate(row[mp.join]):'',phone:mp.phone?String(row[mp.phone]||''):'',status:mp.status?String(row[mp.status]||'Active'):'Active',email:mp.email?String(row[mp.email]||''):'',photo:''};
     const i=DB.emps.findIndex(e=>e.id===id);
     if(i>=0){const p=DB.emps[i].photo;DB.emps[i]={...em,photo:p};upd++;}else{DB.emps.push(em);add++;}
   });
@@ -3543,7 +3586,7 @@ function imBuildMap(){
 function doImportInline(){
   if(!imWB)return;
   const ws=imWB.Sheets[document.getElementById('im-shsel').value];
-  const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+  const rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false,dateNF:'yyyy-mm-dd'});
   const fdefs=IM_FDEFS[imType]||[];
   const mp={};
   fdefs.forEach(f=>{mp[f.k]=(document.getElementById('im-mp-'+f.k)||{}).value||'';});
@@ -3557,7 +3600,7 @@ function doImportInline(){
       const id=String(row[mp.id]||'').trim(),name=String(row[mp.name]||'').trim();
       if(!id||!name){skip++;return;}
       const em={id,name,dept:mp.dept?String(row[mp.dept]||''):'',pos:mp.pos?String(row[mp.pos]||''):'',
-        dob:mp.dob?String(row[mp.dob]||''):'',join:mp.join?String(row[mp.join]||''):'',
+        dob:mp.dob?parseXlDate(row[mp.dob]):'',join:mp.join?parseXlDate(row[mp.join]):'',
         phone:mp.phone?String(row[mp.phone]||''):'',status:mp.status?String(row[mp.status]||'Active'):'Active',
         email:mp.email?String(row[mp.email]||''):'',photo:''};
       const idx=DB.emps.findIndex(e=>e.id===id);
@@ -3594,8 +3637,8 @@ function doImportInline(){
       if(!pr){errs.push(`Process không tìm thấy: ${pid}`);skip++;return;}
       const rawLv=mp.lv?String(row[mp.lv]||'').trim():'';
       const lv=rawLv||'Level 1';
-      const iss=mp.iss?String(row[mp.iss]||'').trim():today();
-      const issDate=iss&&iss.match(/\d{4}[-\/]\d{2}[-\/]\d{2}/)?iss.replace(/\//g,'-'):today();
+      const issRaw=mp.iss?row[mp.iss]:'';
+      const issDate=parseXlDate(issRaw)||today();
       const c={id:nCId(),eid,enm:em.name,pid,pnm:pr.name,lv,iss:issDate,exp:aM(issDate,pr.vl),by:'Import'};
       DB.certs.push(c);add++;
     });
