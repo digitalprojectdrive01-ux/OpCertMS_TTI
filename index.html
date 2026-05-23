@@ -949,6 +949,10 @@ body.verify-mode #page-verify .box{
   <div class="md" style="width:720px;max-width:96vw">
     <div class="mh">
       <h3 id="m-import-title">IMPORT DATA</h3>
+      <a id="im-dl-tpl" href="#" onclick="downloadImportTemplate(event)" title="Download Excel template for this import type"
+        style="display:flex;align-items:center;gap:5px;padding:5px 12px;background:#1D6F42;color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;margin-right:8px">
+        📥 Download Template
+      </a>
       <button onclick="cM('m-import-inline')">✕</button>
     </div>
     <div class="mb" style="padding:14px 18px">
@@ -1002,9 +1006,48 @@ body.verify-mode #page-verify .box{
 
 <!-- IMPORT -->
 <div id="page-import" class="page">
-  <div style="max-width:720px">
+  <div style="max-width:760px">
+
+    <!-- Template Download Cards -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px">
+      <div style="background:#fff;border-radius:10px;border:1px solid #e8e8e8;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:8px;background:#2980B9;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">👤</div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a1a1a">Employees</div><div style="font-size:11px;color:#aaa">Nhân viên</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#777;margin-bottom:12px;line-height:1.5">Import danh sách nhân viên. Upsert theo Employee ID.</div>
+        <div style="display:flex;gap:7px">
+          <button class="btn bg" onclick="downloadImportTemplate(null,'employees')" style="flex:1;font-size:11.5px;padding:6px 8px">⬇ Template</button>
+          <button class="btn bp" onclick="openImportModal('employees')" style="flex:1;font-size:11.5px;padding:6px 8px">📥 Import</button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:1px solid #e8e8e8;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:8px;background:#8E44AD;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">⚙</div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a1a1a">Processes</div><div style="font-size:11px;color:#aaa">Quy trình đào tạo</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#777;margin-bottom:12px;line-height:1.5">Import danh mục quy trình / đào tạo. Upsert theo Process ID.</div>
+        <div style="display:flex;gap:7px">
+          <button class="btn bg" onclick="downloadImportTemplate(null,'processes')" style="flex:1;font-size:11.5px;padding:6px 8px">⬇ Template</button>
+          <button class="btn bp" onclick="openImportModal('processes')" style="flex:1;font-size:11.5px;padding:6px 8px">📥 Import</button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:1px solid #e8e8e8;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📜</div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a1a1a">Certificates</div><div style="font-size:11px;color:#aaa">Chứng chỉ</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#777;margin-bottom:12px;line-height:1.5">Import chứng chỉ. Tự tính ngày hết hạn từ Process validity.</div>
+        <div style="display:flex;gap:7px">
+          <button class="btn bg" onclick="downloadImportTemplate(null,'certs')" style="flex:1;font-size:11.5px;padding:6px 8px">⬇ Template</button>
+          <button class="btn bp" onclick="openImportModal('certs')" style="flex:1;font-size:11.5px;padding:6px 8px">📥 Import</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legacy Employee Import (kept for existing workflow) -->
     <div class="box">
-      <div class="box-hdr"><div class="step-num">1</div><h3 style="font-size:14px;font-weight:600">Upload file Excel employees</h3></div>
+      <div class="box-hdr"><div class="step-num">1</div><h3 style="font-size:14px;font-weight:600">Upload file Excel employees <span style="font-size:11px;color:#aaa;font-weight:400">(Legacy import — Employees only)</span></h3></div>
       <div class="box-body">
         <div class="dz" id="dz">
           <input type="file" id="xfile" accept=".xlsx,.xls,.csv" onchange="handleXL(event)">
@@ -1039,9 +1082,11 @@ body.verify-mode #page-verify .box{
       </div>
     </div>
     <div id="imp-res" style="display:none" class="box"><div class="box-body"></div></div>
-    <div style="background:#fff9f3;border-radius:9px;border:1px solid #fcd5a0;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="font-size:13px;font-weight:600;color:#b07000">No Excel file?</div><div style="font-size:11.5px;color:#999;margin-top:2px">Download a template with the standard column structure</div></div>
-      <button class="btn bw" onclick="dlTpl()">↓ Download Excel Template</button>
+
+    <!-- Quick guide -->
+    <div class="ib" style="margin-top:4px;font-size:12px">
+      💡 <strong>Thứ tự import đề xuất:</strong> (1) Employees → (2) Processes → (3) Certificates<br>
+      Template Certificates có sheet lookup để tra cứu ID nhân viên và quy trình hiện có.
     </div>
   </div>
 </div>
@@ -1129,6 +1174,86 @@ body.verify-mode #page-verify .box{
         </div>
       </div>
     </div>
+
+    <!-- ── EMAIL ALERT SETTINGS ───────────────────────────────────────────── -->
+    <div class="box" id="email-alert-box">
+      <div class="box-hdr">
+        <div style="width:30px;height:30px;border-radius:7px;background:#E67E22;display:flex;align-items:center;justify-content:center;font-size:16px">📧</div>
+        <div>
+          <h3 style="font-size:14px;font-weight:600">Email Alert Settings</h3>
+          <p style="font-size:11.5px;color:#999;margin-top:1px">Gửi cảnh báo chứng chỉ hết hạn qua email tự động</p>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <span id="email-last-sent" style="font-size:11px;color:#aaa"></span>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;font-weight:600">
+            <input type="checkbox" id="email-enabled" onchange="toggleEmailEnabled()" style="width:16px;height:16px;accent-color:var(--red)">
+            Enable
+          </label>
+        </div>
+      </div>
+      <div class="box-body" id="email-settings-body">
+
+        <!-- Recipients -->
+        <div class="ib" style="margin-bottom:14px;font-size:12px">
+          📬 <strong>Powered by Resend API</strong> — Free tier: 3,000 emails/month.
+          Requires <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px">RESEND_API_KEY</code> in Vercel environment variables.
+          <a href="https://resend.com" target="_blank" style="color:var(--red);text-decoration:none">→ resend.com</a>
+        </div>
+
+        <div class="fg" style="gap:12px;margin-bottom:12px">
+          <div class="fl s2">
+            <label>Recipients (comma-separated) / Danh sách nhận email *</label>
+            <input type="text" id="email-recipients" placeholder="manager@ttigroup.com.vn, hr@ttigroup.com.vn">
+          </div>
+          <div class="fl">
+            <label>From Name / Tên người gửi</label>
+            <input type="text" id="email-from-name" placeholder="OpCertMS Alert" value="OpCertMS Alert">
+          </div>
+          <div class="fl">
+            <label>From Email / Email gửi (phải verify trên Resend)</label>
+            <input type="text" id="email-from-email" placeholder="noreply@yourdomain.com">
+          </div>
+        </div>
+
+        <div class="fg" style="gap:12px;margin-bottom:12px">
+          <div class="fl">
+            <label>Alert threshold (days) / Cảnh báo trước (ngày)</label>
+            <input type="number" id="email-threshold" value="30" min="1" max="90" style="width:100px">
+          </div>
+          <div class="fl">
+            <label>Send days / Ngày gửi trong tuần</label>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="1" checked> Mon</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="2" checked> Tue</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="3" checked> Wed</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="4" checked> Thu</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="5" checked> Fri</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="6"> Sat</label>
+              <label style="display:flex;align-items:center;gap:3px;font-size:12px;font-weight:normal"><input type="checkbox" class="email-day" value="0"> Sun</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview & Result -->
+        <div id="email-result" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:7px;font-size:12.5px"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <button class="btn bp" onclick="saveEmailSettings()">💾 Save Config</button>
+          <button class="btn bg" onclick="sendEmailNow()" id="email-send-btn">📧 Send Alert Now</button>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <input type="text" id="email-test-addr" placeholder="test@example.com" style="width:200px;padding:5px 10px;border:1px solid #e0e0e0;border-radius:5px;font-size:12.5px">
+            <button class="btn bs" onclick="sendTestEmail()">✉ Send Test</button>
+          </div>
+        </div>
+
+        <div class="ib w" style="margin-top:14px;font-size:11.5px">
+          🤖 <strong>Auto-schedule:</strong> Vercel Cron Job gọi <code>/api/cron-alert</code> lúc 08:00 (GMT+7) mỗi ngày.
+          Cần thêm <code>"crons"</code> vào <code>vercel.json</code> — đã được cấu hình sẵn.
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1563,10 +1688,205 @@ function doImport(){
   </div>`;
   updSbf();rDash();saveDB();
 }
-function dlTpl(){
-  const data=[['Employee ID','Full Name','Department','Position','Date of Birth','Join Date','Phone','Status','Email'],['EMP-001','Ahmad Fauzi','Production','Operator','1990-05-12','2015-03-01','+62811111111','Active','ahmad@co.com'],['EMP-002','Budi Santoso','Quality Control','Inspector','1988-07-23','2016-06-15','+62822222222','Active','budi@co.com']];
-  const ws=XLSX.utils.aoa_to_sheet(data);ws['!cols']=[{wch:14},{wch:22},{wch:18},{wch:18},{wch:14},{wch:12},{wch:16},{wch:10},{wch:24}];
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Employees');XLSX.writeFile(wb,'OpCertMS_Employee_Template.xlsx');
+function dlTpl(){ downloadImportTemplate(null,'employees'); }
+
+// ─── DOWNLOAD IMPORT TEMPLATES ───────────────────────────────────────────────
+function downloadImportTemplate(evt, forceType){
+  if(evt) evt.preventDefault();
+  const type = forceType || imType || 'employees';
+
+  // Helper: apply bold yellow header style to row 0
+  function styleHeader(ws, cols){
+    cols.forEach((c,i)=>{
+      const cell=XLSX.utils.encode_cell({r:0,c:i});
+      if(!ws[cell]) ws[cell]={v:c,t:'s'};
+      ws[cell].s={
+        font:{bold:true,color:{rgb:'FFFFFF'},sz:11},
+        fill:{fgColor:{rgb:'C0392B'},patternType:'solid'},
+        alignment:{horizontal:'center',vertical:'center',wrapText:true},
+        border:{bottom:{style:'medium',color:{rgb:'922B21'}}}
+      };
+    });
+  }
+
+  // Helper: style a sample data row
+  function styleRow(ws, rowIdx, colCount, alt){
+    const bg = alt ? 'F7F7F7' : 'FFFFFF';
+    for(let c=0;c<colCount;c++){
+      const cell=XLSX.utils.encode_cell({r:rowIdx,c});
+      if(ws[cell]) ws[cell].s={
+        fill:{fgColor:{rgb:bg},patternType:'solid'},
+        alignment:{horizontal:'left',vertical:'center'},
+        border:{
+          top:{style:'thin',color:{rgb:'DDDDDD'}},
+          bottom:{style:'thin',color:{rgb:'DDDDDD'}},
+          left:{style:'thin',color:{rgb:'DDDDDD'}},
+          right:{style:'thin',color:{rgb:'DDDDDD'}},
+        }
+      };
+    }
+  }
+
+  // Helper: style required-field header cells orange
+  function styleRequired(ws, requiredCols, allCols){
+    requiredCols.forEach(name=>{
+      const ci=allCols.indexOf(name);if(ci<0)return;
+      const cell=XLSX.utils.encode_cell({r:0,c:ci});
+      if(ws[cell]) ws[cell].s={
+        ...ws[cell].s||{},
+        font:{bold:true,color:{rgb:'FFFFFF'},sz:11},
+        fill:{fgColor:{rgb:'E67E22'},patternType:'solid'},
+        alignment:{horizontal:'center',vertical:'center'},
+        border:{bottom:{style:'medium',color:{rgb:'935116'}}}
+      };
+    });
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  // ── EMPLOYEES TEMPLATE ─────────────────────────────────────────────────────
+  if(type==='employees'){
+    const hdr=['Employee ID','Full Name','Department','Position','Date of Birth','Join Date','Phone','Status','Email'];
+    const data=[
+      hdr,
+      ['EMP-001','Nguyen Van An','Production','Operator','1990-05-12','2015-03-01','0901234567','Active','an.nguyen@ttigroup.com.vn'],
+      ['EMP-002','Tran Thi Bich','Quality Control','Inspector','1988-07-23','2016-06-15','0912345678','Active','bich.tran@ttigroup.com.vn'],
+      ['EMP-003','Le Minh Duc','Maintenance','Technician','1992-11-30','2019-01-10','0923456789','Active','duc.le@ttigroup.com.vn'],
+      ['EMP-004','Pham Thi Em','Warehouse','Forklift Operator','1995-02-14','2020-08-20','0934567890','Active','em.pham@ttigroup.com.vn'],
+    ];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:14},{wch:24},{wch:18},{wch:20},{wch:16},{wch:14},{wch:16},{wch:12},{wch:32}];
+    ws['!rows']=[{hpt:22}];
+    styleHeader(ws,hdr);
+    styleRequired(ws,['Employee ID','Full Name'],hdr);
+    [1,2,3,4].forEach(r=>styleRow(ws,r,hdr.length,r%2===0));
+
+    // Instructions sheet
+    const instData=[
+      ['📋 HƯỚNG DẪN IMPORT EMPLOYEES — OpCertMS'],[''],
+      ['CỘT','BẮT BUỘC?','MÔ TẢ / GHI CHÚ'],
+      ['Employee ID','✅ Bắt buộc','Mã nhân viên duy nhất. VD: EMP-001. Nếu ID đã tồn tại → cập nhật, không tạo mới.'],
+      ['Full Name','✅ Bắt buộc','Họ và tên đầy đủ của nhân viên.'],
+      ['Department','Tùy chọn','Tên bộ phận. VD: Production, QC, Warehouse...'],
+      ['Position','Tùy chọn','Chức danh / Chức vụ. VD: Operator, Technician...'],
+      ['Date of Birth','Tùy chọn','Ngày sinh. Định dạng: YYYY-MM-DD (2000-01-25) hoặc DD/MM/YYYY'],
+      ['Join Date','Tùy chọn','Ngày vào làm. Định dạng: YYYY-MM-DD'],
+      ['Phone','Tùy chọn','Số điện thoại. VD: 0901234567'],
+      ['Status','Tùy chọn','Trạng thái: Active (mặc định) hoặc Inactive'],
+      ['Email','Tùy chọn','Địa chỉ email công ty.'],
+      [''],
+      ['LƯU Ý','',''],
+      ['→','Ảnh nhân viên có thể được load tự động từ SharePoint (cấu hình trong Settings)',''],
+      ['→','Hệ thống tự động upsert: Employee ID đã có → cập nhật thông tin (giữ ảnh cũ)',''],
+      ['→','Dòng thiếu Employee ID hoặc Full Name sẽ bị bỏ qua',''],
+    ];
+    const wsInst=XLSX.utils.aoa_to_sheet(instData);
+    wsInst['!cols']=[{wch:20},{wch:16},{wch:72}];
+    wsInst['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];
+    wsInst['A1'].s={font:{bold:true,sz:13,color:{rgb:'C0392B'}},fill:{fgColor:{rgb:'FDEDEC'},patternType:'solid'}};
+    XLSX.utils.book_append_sheet(wb,ws,'Employees');
+    XLSX.utils.book_append_sheet(wb,wsInst,'📋 Hướng dẫn');
+    XLSX.writeFile(wb,'OpCertMS_Template_Employees.xlsx');
+    showToast('✅ Downloaded: OpCertMS_Template_Employees.xlsx','#27AE60',3000);
+  }
+
+  // ── PROCESSES TEMPLATE ─────────────────────────────────────────────────────
+  else if(type==='processes'){
+    const hdr=['Process ID','Process Name','Category','Validity (months)','Description','Status'];
+    const data=[
+      hdr,
+      ['PROC-001','Vận hành máy dập CNC','Machine Operation',24,'Vận hành và kiểm tra máy CNC hàng ngày','Active'],
+      ['PROC-002','Kiểm tra chất lượng QC','Quality Control',12,'Quy trình kiểm tra chất lượng sản phẩm','Active'],
+      ['PROC-003','An toàn lao động cơ bản','Safety',12,'Đào tạo an toàn lao động bắt buộc','Active'],
+      ['PROC-004','Vận hành xe nâng (Forklift)','Forklift',24,'Cấp phép vận hành xe nâng hàng','Active'],
+      ['PROC-005','Hàn MIG/MAG','Welding',36,'Chứng chỉ hàn theo tiêu chuẩn AWS','Active'],
+    ];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:14},{wch:36},{wch:22},{wch:18},{wch:48},{wch:12}];
+    ws['!rows']=[{hpt:22}];
+    styleHeader(ws,hdr);
+    styleRequired(ws,['Process ID','Process Name'],hdr);
+    [1,2,3,4,5].forEach(r=>styleRow(ws,r,hdr.length,r%2===0));
+
+    const instData=[
+      ['📋 HƯỚNG DẪN IMPORT PROCESSES — OpCertMS'],[''],
+      ['CỘT','BẮT BUỘC?','MÔ TẢ / GHI CHÚ'],
+      ['Process ID','✅ Bắt buộc','Mã quy trình duy nhất. VD: PROC-001'],
+      ['Process Name','✅ Bắt buộc','Tên đầy đủ của quy trình đào tạo.'],
+      ['Category','Tùy chọn','Phân loại. VD: Safety, Machine Operation, Forklift...'],
+      ['Validity (months)','Tùy chọn','Thời hạn hiệu lực (tháng). Mặc định: 12. ⚠️ Quan trọng: quyết định ngày hết hạn chứng chỉ.'],
+      ['Description','Tùy chọn','Mô tả ngắn về nội dung quy trình / đào tạo.'],
+      ['Status','Tùy chọn','Active (mặc định) hoặc Inactive'],
+      [''],
+      ['LƯU Ý','',''],
+      ['→','Validity (months) rất quan trọng — hệ thống tự tính ngày hết hạn chứng chỉ dựa vào trường này',''],
+      ['→','Process ID đã tồn tại → cập nhật, không tạo mới',''],
+      ['→','Ví dụ: Validity = 12 → chứng chỉ cấp ngày 01/01/2024 sẽ hết hạn 01/01/2025',''],
+    ];
+    const wsInst=XLSX.utils.aoa_to_sheet(instData);
+    wsInst['!cols']=[{wch:20},{wch:16},{wch:72}];
+    wsInst['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];
+    if(wsInst['A1'])wsInst['A1'].s={font:{bold:true,sz:13,color:{rgb:'C0392B'}},fill:{fgColor:{rgb:'FDEDEC'},patternType:'solid'}};
+    XLSX.utils.book_append_sheet(wb,ws,'Processes');
+    XLSX.utils.book_append_sheet(wb,wsInst,'📋 Hướng dẫn');
+    XLSX.writeFile(wb,'OpCertMS_Template_Processes.xlsx');
+    showToast('✅ Downloaded: OpCertMS_Template_Processes.xlsx','#27AE60',3000);
+  }
+
+  // ── CERTIFICATES TEMPLATE ──────────────────────────────────────────────────
+  else if(type==='certs'){
+    const hdr=['Employee ID','Process ID','Level','Issue Date','Notes'];
+    const data=[
+      hdr,
+      ['EMP-001','PROC-001','Level 2','2024-01-15','Hoàn thành đào tạo cơ bản'],
+      ['EMP-001','PROC-003','Level 1','2024-03-01','An toàn lao động bắt buộc'],
+      ['EMP-002','PROC-002','Level 3','2024-02-10','Kiểm tra đạt xuất sắc'],
+      ['EMP-003','PROC-001','Level 1','2023-11-20',''],
+      ['EMP-004','PROC-004','Level 2','2024-05-05','Vận hành forklift class B'],
+    ];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:16},{wch:14},{wch:12},{wch:16},{wch:40}];
+    ws['!rows']=[{hpt:22}];
+    styleHeader(ws,hdr);
+    styleRequired(ws,['Employee ID','Process ID'],hdr);
+    [1,2,3,4,5].forEach(r=>styleRow(ws,r,hdr.length,r%2===0));
+
+    // Lookup helper sheets
+    const empData=[['Employee ID','Full Name','Department'],...DB.emps.slice(0,50).map(e=>[e.id,e.name,e.dept||''])];
+    const wsEmp=XLSX.utils.aoa_to_sheet(empData);
+    wsEmp['!cols']=[{wch:16},{wch:28},{wch:20}];
+
+    const procData=[['Process ID','Process Name','Category','Validity (months)'],...DB.procs.slice(0,50).map(p=>[p.id,p.name,p.cat||'',p.vl||12])];
+    const wsProc=XLSX.utils.aoa_to_sheet(procData);
+    wsProc['!cols']=[{wch:14},{wch:36},{wch:20},{wch:16}];
+
+    const instData=[
+      ['📋 HƯỚNG DẪN IMPORT CERTIFICATES — OpCertMS'],[''],
+      ['CỘT','BẮT BUỘC?','MÔ TẢ / GHI CHÚ'],
+      ['Employee ID','✅ Bắt buộc','Mã nhân viên (phải tồn tại trong hệ thống). Xem sheet "Employees" để tra cứu.'],
+      ['Process ID','✅ Bắt buộc','Mã quy trình (phải tồn tại trong hệ thống). Xem sheet "Processes" để tra cứu.'],
+      ['Level','Tùy chọn','Cấp độ chứng chỉ. VD: Level 1, Level 2, Level 3, Level 4. Mặc định: Level 1'],
+      ['Issue Date','Tùy chọn','Ngày cấp chứng chỉ. Định dạng: YYYY-MM-DD. Mặc định: ngày hôm nay'],
+      ['Notes','Tùy chọn','Ghi chú thêm (không lưu vào hệ thống, chỉ để tham khảo)'],
+      [''],
+      ['⚠️ LƯU Ý QUAN TRỌNG','',''],
+      ['→','Employee ID và Process ID phải TỒN TẠI trong hệ thống — import trước rồi mới import chứng chỉ',''],
+      ['→','Ngày hết hạn được tự động tính: Issue Date + Validity tháng của Process',''],
+      ['→','Mỗi dòng tạo một chứng chỉ MỚI (không upsert như Employees/Processes)',''],
+      ['→','Xem sheet "Employees" và "Processes" để tra cứu ID hợp lệ',''],
+    ];
+    const wsInst=XLSX.utils.aoa_to_sheet(instData);
+    wsInst['!cols']=[{wch:20},{wch:16},{wch:72}];
+    wsInst['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];
+    if(wsInst['A1'])wsInst['A1'].s={font:{bold:true,sz:13,color:{rgb:'C0392B'}},fill:{fgColor:{rgb:'FDEDEC'},patternType:'solid'}};
+
+    XLSX.utils.book_append_sheet(wb,ws,'Certificates');
+    XLSX.utils.book_append_sheet(wb,wsInst,'📋 Hướng dẫn');
+    XLSX.utils.book_append_sheet(wb,wsEmp,'Employees (Lookup)');
+    XLSX.utils.book_append_sheet(wb,wsProc,'Processes (Lookup)');
+    XLSX.writeFile(wb,'OpCertMS_Template_Certificates.xlsx');
+    showToast('✅ Downloaded: OpCertMS_Template_Certificates.xlsx','#27AE60',3000);
+  }
 }
 
 // ─── DASHBOARD ──────────────────────────────────────────────────────────────
@@ -2884,6 +3204,113 @@ const _oEmp0=oEmp;       oEmp=function(id){if(!requireRole('admin'))return;_oEmp
 const _oProc0=oProc;     oProc=function(id){if(!requireRole('admin'))return;_oProc0(id);};
 const _oCert0=oCert;     oCert=function(){if(!requireRole('admin','trainer'))return;_oCert0();};
 
+// ─── EMAIL ALERT FUNCTIONS ────────────────────────────────────────────────────
+async function loadEmailSettings(){
+  try{
+    const r=await fetch('/api/email');
+    if(!r.ok)return;
+    const {config:cfg={}}=await r.json();
+    if(!cfg)return;
+    const g=id=>document.getElementById(id);
+    if(cfg.recipients    &&g('email-recipients'))   g('email-recipients').value   =cfg.recipients;
+    if(cfg.from_name     &&g('email-from-name'))    g('email-from-name').value    =cfg.from_name;
+    if(cfg.from_email    &&g('email-from-email'))   g('email-from-email').value   =cfg.from_email;
+    if(cfg.threshold_days&&g('email-threshold'))    g('email-threshold').value    =cfg.threshold_days;
+    if(cfg.enabled       &&g('email-enabled'))      g('email-enabled').checked    =cfg.enabled==='true';
+    if(cfg.send_days){
+      const days=cfg.send_days.split(',');
+      document.querySelectorAll('.email-day').forEach(cb=>cb.checked=days.includes(cb.value));
+    }
+    if(cfg.last_sent&&g('email-last-sent')){
+      const d=new Date(cfg.last_sent);
+      g('email-last-sent').textContent='Last sent: '+d.toLocaleDateString('vi-VN')+' '+d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+    }
+  }catch(e){/* not yet deployed on Vercel — silent fail */}
+}
+
+function getEmailConfig(){
+  const days=[];
+  document.querySelectorAll('.email-day:checked').forEach(cb=>days.push(cb.value));
+  const g=id=>document.getElementById(id);
+  return{
+    enabled:       String(g('email-enabled')?.checked||false),
+    recipients:    g('email-recipients')?.value.trim()||'',
+    from_name:     g('email-from-name')?.value.trim()||'OpCertMS Alert',
+    from_email:    g('email-from-email')?.value.trim()||'',
+    threshold_days:g('email-threshold')?.value||'30',
+    send_days:     days.join(',')||'1,2,3,4,5',
+    company:       DB.cfg.company||'TTI Group',
+  };
+}
+
+function showEmailResult(msg,ok=true){
+  const el=document.getElementById('email-result');
+  if(!el)return;
+  el.style.display='';
+  el.style.background=ok?'#d5f5e3':'#fdedec';
+  el.style.border='1px solid '+(ok?'#27AE60':'#E74C3C');
+  el.style.color=ok?'#1a5e38':'#922B21';
+  el.innerHTML=msg;
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.display='none';},9000);
+}
+
+function toggleEmailEnabled(){
+  const on=document.getElementById('email-enabled').checked;
+  showEmailResult(on?'✓ Email alerts will be enabled — click "Save Config" to save.':'⏸ Email alerts will be disabled — click "Save Config" to save.',on);
+}
+
+async function saveEmailSettings(){
+  if(!requireRole('admin'))return;
+  const cfg=getEmailConfig();
+  if(!cfg.recipients){showEmailResult('✕ Please enter at least one recipient email.',false);return;}
+  showEmailResult('Saving...', true);
+  try{
+    const r=await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'save_config',config:cfg})});
+    const d=await r.json();
+    if(d.ok) showEmailResult('✅ Config saved! Auto-alerts will use these settings.',true);
+    else     showEmailResult('✕ Error saving: '+(d.error||'Unknown error'),false);
+  }catch(e){showEmailResult('✕ Cannot connect to /api/email — deploy to Vercel first.',false);}
+}
+
+async function sendEmailNow(){
+  if(!requireRole('admin'))return;
+  const btn=document.getElementById('email-send-btn');
+  if(!btn)return;
+  btn.disabled=true; btn.textContent='⏳ Sending...';
+  const cfg=getEmailConfig();
+  if(!cfg.recipients){showEmailResult('✕ Enter recipient email(s) first.',false);btn.disabled=false;btn.textContent='📧 Send Alert Now';return;}
+  const threshold=parseInt(cfg.threshold_days)||30;
+  const alertCerts=DB.certs.filter(c=>{const d=dL(c.exp);return d<0||d<=threshold;});
+  if(!alertCerts.length){
+    showEmailResult(`ℹ️ No certificates expiring within ${threshold} days or already expired. Nothing to send.`,true);
+    btn.disabled=false;btn.textContent='📧 Send Alert Now';return;
+  }
+  showEmailResult(`📨 Sending alert for ${alertCerts.length} certificate(s)...`,true);
+  try{
+    const r=await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send_alert',certs:alertCerts,config:cfg})});
+    const d=await r.json();
+    if(d.ok&&d.sent)  showEmailResult(`✅ Alert sent! <strong>${d.count}</strong> certificate(s) included.<br>→ Recipients: <code>${cfg.recipients}</code>`,true);
+    else if(d.ok)     showEmailResult('ℹ️ No email sent — '+d.reason,true);
+    else              showEmailResult('✕ Failed: '+(d.error||'Check RESEND_API_KEY in Vercel env vars'),false);
+  }catch(e){showEmailResult('✕ Cannot reach /api/email — deploy to Vercel first.',false);}
+  btn.disabled=false;btn.textContent='📧 Send Alert Now';
+}
+
+async function sendTestEmail(){
+  if(!requireRole('admin'))return;
+  const to=(document.getElementById('email-test-addr')||{}).value?.trim();
+  if(!to){showEmailResult('✕ Enter a test email address first.',false);return;}
+  const cfg=getEmailConfig();
+  showEmailResult('Sending test to '+to+'...',true);
+  try{
+    const r=await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'test',to,config:cfg})});
+    const d=await r.json();
+    if(d.ok) showEmailResult(`✅ Test email sent to <strong>${to}</strong> — check your inbox!`,true);
+    else     showEmailResult('✕ Test failed: '+(d.error||'Check RESEND_API_KEY in Vercel env vars'),false);
+  }catch(e){showEmailResult('✕ Cannot reach /api/email — deploy to Vercel first.',false);}
+}
+
 // ─── INLINE IMPORT MODAL ─────────────────────────────────────────────────────
 let imWB=null, imCols=[], imType='employees';
 
@@ -2917,6 +3344,128 @@ const IM_FDEFS={
 };
 
 const IM_TITLES={employees:'IMPORT EMPLOYEES',processes:'IMPORT PROCESSES',certs:'IMPORT CERTIFICATES'};
+
+// ── Download Template ────────────────────────────────────────────────────────
+// Template data: headers + sample rows + field hints per type
+const IM_TEMPLATES = {
+  employees: {
+    sheet: 'EMPLOYEES',
+    headers: ['Employee ID','Full Name','Department','Position','Date of Birth','Join Date','Phone','Email','Status','Note'],
+    required: [0,1],
+    samples: [
+      ['EMP001','Nguyen Van An','Production','Operator','15/03/1990','01/01/2020','0901234567','an.nguyen@ttigroup.com.vn','Active',''],
+      ['EMP002','Tran Thi Binh','Quality','QC Inspector','22/07/1992','15/06/2021','0912345678','binh.tran@ttigroup.com.vn','Active',''],
+      ['EMP003','Le Minh Cuong','Maintenance','Technician','08/11/1988','10/03/2019','0923456789','cuong.le@ttigroup.com.vn','Active',''],
+    ],
+    notes: [
+      '★ = Required field — import fails if blank',
+      'Employee ID must be UNIQUE per employee',
+      'Existing employees with same ID will be UPDATED (photo preserved)',
+      'New employees will be ADDED',
+      'Date format: DD/MM/YYYY or YYYY-MM-DD',
+      'Status: Active or Inactive (defaults to Active if blank)',
+    ],
+  },
+  processes: {
+    sheet: 'PROCESSES',
+    headers: ['Process ID','Process Name','Category','Validity (months)','Description','Status'],
+    required: [0,1,3],
+    samples: [
+      ['PROC-001','Vận hành máy dập (Stamping Operation)','Production',12,'Quy trình vận hành máy dập stamping line 1 & 2','Active'],
+      ['PROC-002','Kiểm soát chất lượng (QC Inspection)','Quality',12,'Quy trình kiểm tra chất lượng sản phẩm đầu ra','Active'],
+      ['PROC-003','An toàn lao động (OSH Basic)','Safety',24,'Quy trình an toàn lao động cơ bản','Active'],
+      ['PROC-004','Vận hành xe nâng (Forklift Operation)','Warehouse',12,'Chứng chỉ vận hành xe nâng — nội bộ & ngoài','Active'],
+    ],
+    notes: [
+      '★ = Required field — import fails if blank',
+      'Process ID must be UNIQUE',
+      'Validity (months) is CRITICAL — determines certificate expiry date',
+      'Example: 12 = certificate valid for 1 year, 24 = 2 years',
+      'Existing processes with same ID will be UPDATED',
+      'Category suggestion: Production / Quality / Safety / Maintenance / Warehouse / HR / Other',
+    ],
+  },
+  certs: {
+    sheet: 'CERTIFICATES',
+    headers: ['Employee ID','Employee Name (ref)','Process ID','Process Name (ref)','Level','Issue Date','Issued By','Note'],
+    required: [0,2],
+    samples: [
+      ['EMP001','Nguyen Van An','PROC-001','Vận hành máy dập','Level 2','01/06/2024','HR Training Team',''],
+      ['EMP002','Tran Thi Binh','PROC-002','Kiểm soát chất lượng','Level 3','15/08/2024','QC Manager',''],
+      ['EMP003','Le Minh Cuong','PROC-005','Bảo trì thiết bị','Level 2','20/03/2024','Maintenance Lead',''],
+      ['EMP001','Nguyen Van An','PROC-003','An toàn lao động','Level 1','05/01/2024','Safety Officer','One employee can have multiple certs'],
+    ],
+    notes: [
+      '★ = Required field — import fails if blank',
+      'Employee ID and Process ID MUST exist in the system first',
+      '"Employee Name" and "Process Name" columns are for reference only',
+      'Expiry date is AUTO-CALCULATED from Process validity — do not add manually',
+      'If Issue Date is blank, today\'s date is used',
+      'Level: Level 1 / Level 2 / Level 3 / Level 4 (defaults to Level 1)',
+      'One row = one certificate (an employee can have multiple rows)',
+      'IMPORT ORDER: Employees first → Processes → then Certificates',
+    ],
+  },
+};
+
+function downloadImportTemplate(e){
+  e.preventDefault();
+  if(!window.XLSX){alert('XLSX library not loaded yet. Please wait a moment and try again.');return;}
+  const tpl = IM_TEMPLATES[imType];
+  if(!tpl){alert('Unknown import type');return;}
+
+  const wb = XLSX.utils.book_new();
+
+  // ── GUIDE sheet ────────────────────────────────────────────────────────────
+  const guideRows = [
+    ['OpCertMS Import Template — ' + tpl.sheet],
+    ['TTI Group | AES · Operation Certificate Management System'],
+    [''],
+    ['HOW TO USE / CÁCH SỬ DỤNG'],
+    ['Step 1', 'Delete the sample rows (first 3-4 coloured rows) if present'],
+    ['Step 2', 'Fill in your data starting from the first empty row below the headers'],
+    ['Step 3', 'Required fields (★) must not be left blank'],
+    ['Step 4', 'Save the file and upload via OpCertMS → Import Excel'],
+    [''],
+    ['FIELD NOTES / GHI CHÚ'],
+    ...tpl.notes.map(n=>['', n]),
+    [''],
+    ['IMPORT ORDER: Employees → Processes → Certificates (create employees & processes BEFORE certificates)'],
+  ];
+  const wsGuide = XLSX.utils.aoa_to_sheet(guideRows);
+  wsGuide['!cols'] = [{wch:14},{wch:70}];
+  XLSX.utils.book_append_sheet(wb, wsGuide, 'GUIDE');
+
+  // ── DATA sheet ─────────────────────────────────────────────────────────────
+  // Build header row with required markers
+  const hdrRow = tpl.headers.map((h,i) => tpl.required.includes(i) ? h+' ★' : h);
+  const aoa = [hdrRow, ...tpl.samples];
+  // Add 30 blank rows
+  for(let i=0;i<30;i++) aoa.push(new Array(tpl.headers.length).fill(''));
+
+  const wsData = XLSX.utils.aoa_to_sheet(aoa);
+
+  // Column widths
+  const colWidths = {
+    employees: [14,24,20,22,14,14,16,28,10,18],
+    processes: [16,36,18,14,40,12],
+    certs:     [14,26,16,30,10,14,20,24],
+  };
+  wsData['!cols'] = (colWidths[imType]||[]).map(w=>({wch:w}));
+
+  // Freeze header row
+  wsData['!freeze'] = {xSplit:0, ySplit:1};
+
+  XLSX.utils.book_append_sheet(wb, wsData, tpl.sheet);
+
+  // Set active sheet to data sheet
+  wb.Workbook = { Sheets: [{ Hidden:0 },{ Hidden:0 }], SheetNames: ['GUIDE', tpl.sheet] };
+
+  // Download
+  const fname = `OpCertMS_Import_${tpl.sheet}_Template.xlsx`;
+  XLSX.writeFile(wb, fname);
+  showToast(`📥 Downloaded: ${fname}`,'#27AE60');
+}
 
 function openImportModal(type){
   if(!requireRole('admin'))return;
@@ -3102,9 +3651,13 @@ rSet=function(){
   if(box)box.style.display=currentUser?.role==='admin'?'':'none';
   const dbox=document.getElementById('dept-mgmt-box');
   if(dbox)dbox.style.display=currentUser?.role==='admin'?'':'none';
+  const ebox=document.getElementById('email-alert-box');
+  if(ebox)ebox.style.display=currentUser?.role==='admin'?'':'none';
   renderUsers();
   renderDepts();
   renderSyncSettings();
+  // Load email config from server (async, silent on error)
+  if(currentUser?.role==='admin') loadEmailSettings();
 };
 // Expose rDeptsPage globally so nav works before it's defined
 
