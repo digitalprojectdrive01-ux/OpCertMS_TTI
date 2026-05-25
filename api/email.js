@@ -150,8 +150,8 @@ function buildEmailHTML(certs, company = 'TTI Group', thresholdDays = 30) {
     <!-- Footer -->
     <div style="background:#1A1A1A;border-radius:0 0 10px 10px;padding:16px 32px;text-align:center">
       <p style="margin:0;font-size:11px;color:#888">
-        Email này được gửi tự động bởi <strong style="color:#ccc">OpCertMS</strong> — ${company}<br>
-        <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcertms.vercel.app</a>
+        Email này được gửi tự động bởi <strong style="color:#ccc">OpCertMS by TTI Group | AES</strong> — ${company}<br>
+        <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcert-tti.vercel.app | opcert-tti.wiseorbit.app</a>
       </p>
     </div>
   </div>
@@ -218,7 +218,7 @@ export default async function handler(req, res) {
     // ── test ─────────────────────────────────────────────────────────────────
     if (action === 'test') {
       if (!RESEND_KEY) return res.json({ ok: false, error: 'RESEND_API_KEY not set in Vercel env vars' });
-      const fromEmail = config?.from_email || 'no-reply@wiseorbit.app';
+      const fromEmail = config?.from_email || 'no-reply@opcert-tti.wiseorbit.app';
       const fromName  = config?.from_name  || 'OpCertMS';
       const r = await fetch(RESEND_URL, {
         method: 'POST',
@@ -246,7 +246,7 @@ export default async function handler(req, res) {
 
       const recipients   = (config?.recipients || '').split(',').map(s => s.trim()).filter(Boolean);
       const company      = config?.company || 'TTI Group';
-      const fromEmail    = config?.from_email || 'no-reply@wiseorbit.app';
+      const fromEmail    = config?.from_email || 'no-reply@opcert-tti.wiseorbit.app';
       const fromName     = config?.from_name  || 'OpCertMS Alert';
       const thresholdDays= parseInt(config?.threshold_days) || 30;
 
