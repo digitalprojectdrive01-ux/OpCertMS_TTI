@@ -214,7 +214,7 @@ export default async function handler(req, res) {
     // ── test ─────────────────────────────────────────────────────────────────
     if (action === 'test') {
       if (!RESEND_KEY) return res.json({ ok: false, error: 'RESEND_API_KEY not set in Vercel env vars' });
-      const fromEmail = config?.from_email || 'noreply@opcertms.ttigroup.com.vn';
+      const fromEmail = config?.from_email || 'onboarding@resend.dev';
       const fromName  = config?.from_name  || 'OpCertMS';
       const r = await fetch(RESEND_URL, {
         method: 'POST',
