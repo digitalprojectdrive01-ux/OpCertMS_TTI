@@ -68,7 +68,7 @@ export default async function handler(req, res) {
     const recipients    = (cfg.recipients || '').split(',').map(s => s.trim()).filter(Boolean);
     const thresholdDays = parseInt(cfg.threshold_days) || 30;
     const company       = cfg.company       || 'TTI Group';
-    const fromEmail     = cfg.from_email    || 'no-reply@wiseorbit.app';
+    const fromEmail     = cfg.from_email    || 'no-reply@opcert-tti.wiseorbit.app';
     const fromName      = cfg.from_name     || 'OpCertMS Alert';
 
     if (!recipients.length) {
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
     </div>
   </div>
   <div style="background:#1A1A1A;border-radius:0 0 10px 10px;padding:14px 28px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#888">Email tự động từ <strong style="color:#ccc">OpCertMS</strong> • ${company} • <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcertms.vercel.app</a></p>
+    <p style="margin:0;font-size:11px;color:#888">Email tự động từ <strong style="color:#ccc">OpCertMS</strong> • ${company} • <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcert-tti.vercel.app | opcert-tti.wiseorbit.app</a></p>
   </div>
 </div></body></html>`;
 
