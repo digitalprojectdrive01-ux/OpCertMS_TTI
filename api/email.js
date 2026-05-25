@@ -61,18 +61,22 @@ function buildEmailHTML(certs, company = 'TTI Group', thresholdDays = 30) {
 
   <div style="max-width:680px;margin:0 auto;padding:24px 16px">
 
-    <!-- Header -->
-    <div style="background:#C0392B;border-radius:10px 10px 0 0;padding:28px 32px">
-      <div style="display:flex;align-items:center;gap:16px">
-        <div style="background:#fff;border-radius:7px;padding:6px 12px">
-          <span style="font-size:22px;font-weight:900;color:#C0392B;font-family:Arial Black,Arial">TTI</span>
-        </div>
-        <div>
-          <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:1px">Certificate Expiry Alert</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px">Cảnh báo chứng chỉ sắp hết hạn / đã hết hạn</div>
+      <!-- Header -->
+      <div style="background:#C0392B;border-radius:10px 10px 0 0;padding:28px 32px">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="background:#fff;border-radius:7px;padding:6px 12px">
+            <img 
+              src="https://cdn-apac.onetrust.com/logos/9969a1a7-da3f-4537-a9fb-c34080152d3d/0a4f2cf4-3a03-4dcf-afb1-6aff4a0b9c8c/b3c5684a-df37-4609-9920-58421a46ee71/01_TTI_Logo_RGB_for_Digital.png"
+              alt="TTI"
+              style="height:32px;width:auto;display:block"
+            />
+          </div>
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:1px">Certificate Expiry Alert</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px">Cảnh báo chứng chỉ sắp hết hạn / đã hết hạn</div>
+          </div>
         </div>
       </div>
-    </div>
 
     <!-- Body -->
     <div style="background:#fff;padding:28px 32px;border:1px solid #e8e8e8">
@@ -136,7 +140,7 @@ function buildEmailHTML(certs, company = 'TTI Group', thresholdDays = 30) {
 
       <!-- CTA -->
       <div style="text-align:center;margin:24px 0 8px">
-        <a href="https://opcertms.vercel.app" style="display:inline-block;background:#C0392B;color:#fff;text-decoration:none;padding:12px 28px;border-radius:7px;font-weight:700;font-size:14px">
+        <a href="https://opcert-tti.vercel.app" style="display:inline-block;background:#C0392B;color:#fff;text-decoration:none;padding:12px 28px;border-radius:7px;font-weight:700;font-size:14px">
           🔗 Vào OpCertMS để gia hạn
         </a>
       </div>
@@ -147,7 +151,7 @@ function buildEmailHTML(certs, company = 'TTI Group', thresholdDays = 30) {
     <div style="background:#1A1A1A;border-radius:0 0 10px 10px;padding:16px 32px;text-align:center">
       <p style="margin:0;font-size:11px;color:#888">
         Email này được gửi tự động bởi <strong style="color:#ccc">OpCertMS</strong> — ${company}<br>
-        <a href="https://opcertms.vercel.app" style="color:#aaa">opcertms.vercel.app</a>
+        <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcertms.vercel.app</a>
       </p>
     </div>
   </div>
@@ -259,7 +263,7 @@ export default async function handler(req, res) {
       const html    = buildEmailHTML(alertCerts, company, thresholdDays);
       const expired = alertCerts.filter(c => daysLeft(c.exp) < 0).length;
       const soon    = alertCerts.filter(c => { const d = daysLeft(c.exp); return d >= 0 && d <= thresholdDays; }).length;
-      const subject = `⚠️ OpCertMS Alert — ${expired > 0 ? `${expired} Expired, ` : ''}${soon} Expiring Soon`;
+      const subject = `⚠️ TTI Group-AES|OpCertMS Alert — ${expired > 0 ? `${expired} Expired, ` : ''}${soon} Expiring Soon`;
 
       const r = await fetch(RESEND_URL, {
         method: 'POST',
