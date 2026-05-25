@@ -2291,7 +2291,7 @@ function buildEmpCard(emp){
   const n     = scAll.length;
   const nCols = Math.min(n, 3);  // max 3 cols (template has 3 data columns)
   const sc    = scAll.slice(0, nCols); // only show max 3 certs
-  const lvN = lv => { const m=lv.match(/Level\s*(\d)/i); return m?'Lv'+m[1]:''; };
+  const lvN = lv => { const m=lv.match(/Level\s*(\d)/i); return m?m[1]:''; };
   const cW    = nCols > 0 ? (100/nCols).toFixed(2)+'%' : '100%';
   const Z   = 'position:absolute;z-index:2;';
 
