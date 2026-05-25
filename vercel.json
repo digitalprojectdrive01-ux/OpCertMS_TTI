@@ -1,10 +1,18 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/api/auth",   "dest": "/api/auth.js"   },
-    { "src": "/api/verify", "dest": "/api/verify.js" },
-    { "src": "/api/db",     "dest": "/api/db.js"     },
-    { "src": "/api/(.*)",   "dest": "/api/$1"        },
-    { "src": "/(.*)",       "dest": "/index.html"    }
+    { "src": "/api/auth",       "dest": "/api/auth.js"       },
+    { "src": "/api/verify",     "dest": "/api/verify.js"     },
+    { "src": "/api/db",         "dest": "/api/db.js"         },
+    { "src": "/api/email",      "dest": "/api/email.js"      },
+    { "src": "/api/cron-alert", "dest": "/api/cron-alert.js" },
+    { "src": "/api/(.*)",       "dest": "/api/$1"            },
+    { "src": "/(.*)",           "dest": "/index.html"        }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron-alert",
+      "schedule": "0 1 * * 1-5"
+    }
   ]
 }
