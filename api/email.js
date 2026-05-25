@@ -242,7 +242,7 @@ export default async function handler(req, res) {
 
       const recipients   = (config?.recipients || '').split(',').map(s => s.trim()).filter(Boolean);
       const company      = config?.company || 'TTI Group';
-      const fromEmail    = config?.from_email || 'noreply@opcertms.ttigroup.com.vn';
+      const fromEmail    = config?.from_email || 'onboarding@resend.dev';
       const fromName     = config?.from_name  || 'OpCertMS Alert';
       const thresholdDays= parseInt(config?.threshold_days) || 30;
 
