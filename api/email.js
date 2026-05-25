@@ -214,7 +214,7 @@ export default async function handler(req, res) {
     // ── test ─────────────────────────────────────────────────────────────────
     if (action === 'test') {
       if (!RESEND_KEY) return res.json({ ok: false, error: 'RESEND_API_KEY not set in Vercel env vars' });
-      const fromEmail = config?.from_email || 'onboarding@resend.dev';
+      const fromEmail = config?.from_email || 'no-reply@wiseorbit.app';
       const fromName  = config?.from_name  || 'OpCertMS';
       const r = await fetch(RESEND_URL, {
         method: 'POST',
@@ -242,7 +242,7 @@ export default async function handler(req, res) {
 
       const recipients   = (config?.recipients || '').split(',').map(s => s.trim()).filter(Boolean);
       const company      = config?.company || 'TTI Group';
-      const fromEmail    = config?.from_email || 'onboarding@resend.dev';
+      const fromEmail    = config?.from_email || 'no-reply@wiseorbit.app';
       const fromName     = config?.from_name  || 'OpCertMS Alert';
       const thresholdDays= parseInt(config?.threshold_days) || 30;
 
