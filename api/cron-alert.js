@@ -152,11 +152,11 @@ export default async function handler(req, res) {
       <tbody>${certRows(expiring, false)}</tbody>
     </table>` : ''}
     <div style="text-align:center;margin-top:20px">
-      <a href="https://opcertms.vercel.app" style="background:#C0392B;color:#fff;text-decoration:none;padding:11px 24px;border-radius:7px;font-weight:700;font-size:13px;display:inline-block">🔗 Vào OpCertMS để gia hạn</a>
+      <a href="https://opcert-tti.vercel.app" style="background:#C0392B;color:#fff;text-decoration:none;padding:11px 24px;border-radius:7px;font-weight:700;font-size:13px;display:inline-block">🔗 Vào OpCertMS để gia hạn</a>
     </div>
   </div>
   <div style="background:#1A1A1A;border-radius:0 0 10px 10px;padding:14px 28px;text-align:center">
-    <p style="margin:0;font-size:11px;color:#888">Email tự động từ <strong style="color:#ccc">OpCertMS</strong> • ${company} • <a href="https://opcertms.vercel.app" style="color:#aaa">opcertms.vercel.app</a></p>
+    <p style="margin:0;font-size:11px;color:#888">Email tự động từ <strong style="color:#ccc">OpCertMS</strong> • ${company} • <a href="https://opcert-tti.vercel.app" style="color:#aaa">opcertms.vercel.app</a></p>
   </div>
 </div></body></html>`;
 
