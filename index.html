@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpCertMS v1 — Operation Certificate Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -2365,12 +2366,12 @@ function buildEmpCard(emp){
 
   return (
     '<div style="position:relative;width:54mm;height:90mm;overflow:hidden;'
-    +'page-break-inside:avoid;break-inside:avoid;font-family:Arial,sans-serif;'
+    +'page-break-inside:avoid;break-inside:avoid;font-family:"Segoe UI",Arial,sans-serif;'
     +'border:0.4mm solid #bbb;box-sizing:border-box">'
     +'<img src="'+CARD_TEMPLATE_B64+'" style="position:absolute;inset:0;width:100%;height:100%;z-index:1">'
     +'<div style="'+Z+'top:21%;left:12.5%;width:75%;height:34%;overflow:hidden">'+photo+'</div>'
     +'<div style="'+Z+'top:57%;left:0;width:100%;text-align:center;padding:0 2mm;box-sizing:border-box">'
-    +'<div style="font-size:9pt;font-weight:900;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3">'+emp.name+'</div>'
+    +'<div style="font-size:9pt;font-weight:900;color:#111;font-family:"Segoe UI",Tahoma,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3">'+emp.name+'</div>'
     +'<div style="font-size:5pt;color:#666;font-family:monospace;line-height:1.3">'+emp.id+'</div>'
     +'</div>'
     +row(68.71, 5.34, pRow, 'overflow:visible')
