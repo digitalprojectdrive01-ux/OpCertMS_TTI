@@ -68,7 +68,7 @@ export default async function handler(req, res) {
     const recipients    = (cfg.recipients || '').split(',').map(s => s.trim()).filter(Boolean);
     const thresholdDays = parseInt(cfg.threshold_days) || 30;
     const company       = cfg.company       || 'TTI Group';
-    const fromEmail     = cfg.from_email    || 'onboarding@resend.dev';
+    const fromEmail     = cfg.from_email    || 'no-reply@wiseorbit.app';
     const fromName      = cfg.from_name     || 'OpCertMS Alert';
 
     if (!recipients.length) {
